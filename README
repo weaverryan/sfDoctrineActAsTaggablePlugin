@@ -28,7 +28,7 @@ This behavior permits to attach tags to Doctrine objects. It includes tag-clouds
  * go to your project's root
  * Install the plugin: 
         
-        ./symfony plugin-install http://plugins.symfony-project.com/sDoctrineActAsTaggablePlugin
+        ./symfony plugin-install http://svn.symfony-project.com/plugins/sfDoctrineActAsTaggablePlugin/trunk
  
  * edit your schema.yml and add 
  
