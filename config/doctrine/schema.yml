@@ -1,0 +1,40 @@
+Tag:
+  columns:
+    id:
+      type: integer(4)
+      primary: true
+      autoincrement: true
+    name:             varchar(100)
+    is_triple:        boolean
+    triple_namespace: varchar(100)
+    triple_key:       varchar(100)
+    triple_value:     varchar(100)
+  indexes:
+    name:
+      fields: name
+    triple1:
+      fields: triple_namespace
+    triple2:
+      fields: triple_key
+    triple3:
+      fields: triple_value
+        
+Tagging:
+  relations:
+    Tag:
+      foreignType: one
+  columns:
+    id:
+      type: integer(4)
+      primary: true
+      autoincrement: true
+    tag_id:           
+      type: integer(4)
+      notnull: true
+    taggable_model:   varchar(30)
+    taggable_id:      integer
+  indexes:
+    tag:
+      fields: tag_id
+    taggable:
+      fields: taggable_model, taggable_id
