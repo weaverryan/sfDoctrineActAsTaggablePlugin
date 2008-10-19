@@ -3,3 +3,10 @@
 #    class:          sfPropelDatabase
 #    param:
 #      dsn:          mysql://root@localhost/dbname
+
+all:
+  doctrine:
+    class:          sfDoctrineDatabase
+    param:
+#      dsn:          sqlite:///<?php echo dirname(__FILE__); ?>/doctrine.db
+      dsn:          mysql://taggable:taggable@localhost/sfDoctrineActAsTaggablePlugin

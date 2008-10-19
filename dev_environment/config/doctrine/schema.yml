@@ -1,0 +1,3 @@
+BlogPost:
+  columns:
+    title: string(255)
