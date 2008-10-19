@@ -1,5 +1,15 @@
 BlogPost:
   BlogPost_1:
-    title:  My test title
+    title:  My test blog post title
   BlogPost_2:
-    title:  My other test title    
+    title:  My other test blog post title
+    
+BlogComment:
+  BlogComment_1:
+    title:  My test blog comment title
+  BlogComment_2:
+    title:  My other test blog comment title
+    
+UnTaggableModel:
+  UnTaggableModel_1:
+    title:  Hey, I'm not taggable!            

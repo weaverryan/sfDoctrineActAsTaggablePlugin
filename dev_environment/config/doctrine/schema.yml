@@ -1,3 +1,15 @@
 BlogPost:
+  actAs:
+    Taggable:
+  columns:
+    title: string(255)
+    
+BlogComment:
+  actAs:
+    Taggable:
+  columns:
+    title: string(255)
+    
+UnTaggableModel:
   columns:
     title: string(255)
