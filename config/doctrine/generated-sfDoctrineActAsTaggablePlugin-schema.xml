@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database name="Tag" defaultIdMethod="native" package="lib.model">
+
+  <table name="columns">
+    <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
+    <column name="name" type="varchar" size="100" />
+    <column name="is_triple" type="boolean" />
+    <column name="triple_namespace" type="varchar" size="100" />
+    <column name="triple_key" type="varchar" size="100" />
+    <column name="triple_value" type="varchar" size="100" />
+  </table>
+
+  <table name="indexes">
+    <column name="name" fields="name" />
+    <column name="triple1" fields="triple_namespace" />
+    <column name="triple2" fields="triple_key" />
+    <column name="triple3" fields="triple_value" />
+    <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
+  </table>
+
+</database>
