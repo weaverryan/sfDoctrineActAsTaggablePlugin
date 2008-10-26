@@ -117,7 +117,7 @@ class Taggable extends Doctrine_Template
 {    
     public function setTableDefinition()
     {
-        $this->setListener(new TaggableListener());
+        $this->addListener(new TaggableListener());
     }
     
     /**
