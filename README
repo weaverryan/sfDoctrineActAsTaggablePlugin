@@ -171,7 +171,7 @@ These methods are all located in the ``PluginTagTable`` class:
     // specific tags
     $criteria = PluginTagTable::getObjectTaggedWithQuery('Post', 'tutu, toto');
     $criteria->addWhere('post.published = true');
-    $posts = $c->execute();
+    $posts = $q->execute();
 
     // gets objects that are tagged with a certain number of tags within a set of
     // tags. For instance, the following line returns all the object tagged with at
@@ -244,9 +244,9 @@ created in March 2007:
 
     #!php
     <?php
-    $c = new Criteria();
-    $c->addJoin(PostPeer::ID, TaggingPeer::TAGGABLE_ID);
-    $c->add(PostPeer::CREATED_AT, '2007-03%', Criteria::LIKE);
+    $q = new Criteria();
+    $q->addJoin(PostPeer::ID, TaggingPeer::TAGGABLE_ID);
+    $q->add(PostPeer::CREATED_AT, '2007-03%', Criteria::LIKE);
     $tags = PluginTagTable::getPopulars($c, array('model' => 'Post'));
     echo tag_cloud($tags, '@tag?tags=%s');
 

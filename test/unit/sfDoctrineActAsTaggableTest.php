@@ -343,8 +343,8 @@ $tags = PluginTagTable::getAllTagNameWithCount();
 $t->ok($tags == array('tag1' => 3, 'tag2' => 2, 'tag3' => 5, 'tag4' => 2, 'tag5' => 1, 'tag6' => 1, 'tag7' => 3, 'tag8' => 1), 'all tags can be retrieved and counted with getAllTagNameWithCount().');
 
 // getPopulars() test
-$c = new Doctrine_Query();
-$c->limit(3); 
+$q = new Doctrine_Query();
+$q->limit(3); 
 $tags = PluginTagTable::getPopulars($c);
 $t->is(array_keys($tags), array('tag1', 'tag3', 'tag7'), 'most popular tags can be retrieved with getPopulars().');
 $t->ok($tags['tag3'] >= $tags['tag1'], 'getPopulars() preserves tag importance.');
