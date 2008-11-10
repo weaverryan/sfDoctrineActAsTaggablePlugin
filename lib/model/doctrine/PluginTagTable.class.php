@@ -52,7 +52,7 @@ class PluginTagTable extends Doctrine_Table
             $q->addWhere('t.triple_value = ?', $options['value']);
         }
         
-        return array_keys($q->execute(array(), Doctrine::HYDRATE_ARRAY));
+        return array_keys($q->orderBy('t.name')->execute(array(), Doctrine::HYDRATE_ARRAY));
     }
 
     /**
@@ -248,7 +248,7 @@ class PluginTagTable extends Doctrine_Table
         {
             $tags = array($tags);
         }
-
+        
         $tagging_options = $options;
 
         if (isset($tagging_options['limit']))
@@ -257,20 +257,19 @@ class PluginTagTable extends Doctrine_Table
         }
 
         $taggings = self::getTaggings($tags, $tagging_options);
-
         $result = array();
 
-        foreach ($taggings as $key => $tagging)
+        foreach ($taggings as $model => $tagging)
         {
             $tag_objects = Doctrine_Query::create()
                                          ->select('t.name')
                                          ->from('Tag t, t.Tagging tg')
                                          ->whereIn('tg.taggable_id', $tagging)
                                          ->whereNotIn('t.name', $tags)
-                                         ->addWhere('tg.taggable_model = ?')
+                                         // ->addWhere('tg.taggable_model = ?')
                                          ->orderBy('t.name DESC')
-                                         ->execute(array($key), Doctrine::HYDRATE_ARRAY);
-
+                                         ->execute(array(), Doctrine::HYDRATE_ARRAY);
+            
             foreach ($tag_objects as $tag)
             {
                 $name = $tag['name'];
@@ -466,9 +465,9 @@ class PluginTagTable extends Doctrine_Table
         {
             $q->addSelect('tg.taggable_model')->addGroupBy('tg.taggable_model');
         }
-        
+
         $results = $q->execute(array(), Doctrine::HYDRATE_ARRAY);
-        
+
         $taggings = array();
 
         foreach($results as $rs)

@@ -78,11 +78,11 @@ class TaggableListener extends Doctrine_Record_Listener
         
         if(count(Taggable::get_removed_tags($object) ) > 0)
         {
-            Doctrine_Query::create()
-                          ->select('t.id')
-                          ->from('tag t INDEXBY t.id')
-                          ->whereIn('t.name', $removed_tags)
-                          ->execute(array(), Doctrine::HYDRATE_ARRAY);
+            $removed_tag_ids = Doctrine_Query::create()
+                                             ->select('t.id')
+                                             ->from('tag t INDEXBY t.id')
+                                             ->whereIn('t.name', $removed_tags)
+                                             ->execute(array(), Doctrine::HYDRATE_ARRAY);
             
             Doctrine_Query::create()
                           ->delete()
@@ -107,9 +107,7 @@ class TaggableListener extends Doctrine_Record_Listener
     */
     public function preDelete(Doctrine_Event $event)
     {
-        $object = $event->getInvoker();
-        
-        $object->removeAllTags();
+        $object = $event->getInvoker()->removeAllTags();
     }
 }
 

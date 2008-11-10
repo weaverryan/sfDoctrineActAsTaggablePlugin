@@ -1,44 +1,36 @@
 <?php
 
-define('SF_ROOT_DIR', realpath(dirname(__FILE__).'/../../../..')); 
-define('SF_APP', 'frontend'); 
-define('SF_ENVIRONMENT', 'test'); 
-define('SF_DEBUG', TRUE); 
-include SF_ROOT_DIR.'/config/config.php'; 
-require_once $sf_symfony_lib_dir.'/util/sfCore.class.php'; 
-sfCore::initSimpleAutoload(     array( 
-        $sf_symfony_lib_dir, 
-        SF_ROOT_DIR.'/lib/model/doctrine', 
-        SF_ROOT_DIR.'/lib', 
-        SF_ROOT_DIR.'/apps/frontend/lib', 
-        SF_ROOT_DIR.'/plugins' ) 
-); 
-sfCore::bootstrap($sf_symfony_lib_dir, $sf_symfony_data_dir); 
-sfContext::getInstance();
+include(dirname(__FILE__).'/../bootstrap/unit.php');
+
+$configuration = ProjectConfiguration::getApplicationConfiguration('frontend', 'test', true);
+new sfDatabaseManager($configuration);
+
+Doctrine::loadModels($configuration->getRootDir() . '/lib/model/doctrine');
+Doctrine::dropDatabases();
+Doctrine::createDatabases();
+Doctrine::createTablesFromModels();
+Doctrine::loadData($configuration->getRootDir() . '/data/fixtures');
 
 // test variables definition
-define('TEST_CLASS', 'Toilet');
-define('TEST_CLASS_2', 'Shopping');
-define('DOCTRINE_CLASS', 'Address'); # a doctrine class not taggle please :D
-
-//require_once($sf_root_dir.'/test/bootstrap/functional.php');
-//require_once($sf_symfony_lib_dir.'/vendor/lime/lime.php');
+define('TEST_CLASS',      'BlogPost');
+define('TEST_CLASS_2',    'BlogComment');
+define('DOCTRINE_CLASS',  'UnTaggableModel'); # a doctrine class not taggable please :D
 
 if (!defined('TEST_CLASS') || !class_exists(TEST_CLASS)
     || !defined('TEST_CLASS_2') || !class_exists(TEST_CLASS_2))
 {
   // Don't run tests
-  throw new exception('test class do not exists!');
+  throw new exception('test classes do not exist!');
 }
 
 // initialize database manager
-$databaseManager = new sfDatabaseManager();
-$databaseManager->initialize();
+// $databaseManager = new sfDatabaseManager();
+// $databaseManager->initialize();
 
 // clean the database
-Doctrine::getTable('Tagging')->findAll()->delete();
-Doctrine::getTable('Tag')->findAll()->delete();
-Doctrine::getTable(TEST_CLASS)->findAll()->delete();
+// Doctrine::getTable('Tagging')->findAll()->delete();
+// Doctrine::getTable('Tag')->findAll()->delete();
+// Doctrine::getTable(TEST_CLASS)->findAll()->delete();
 
 // start tests
 $t = new lime_test(90, new lime_output_color());
@@ -180,7 +172,7 @@ $object->addTag('titi');
 $object->save();
 $object->addTag('tata');
 $object->removeAllTags();
-$t->ok(!$object->hasTag(), 'tags can all be removed at once.');
+$t->ok(!$object->hasTag('titi'), 'tags can all be removed at once.');
 
 $object = _create_object(TEST_CLASS);
 $object->addTag('toto,international,tata');
@@ -336,16 +328,16 @@ $object5->save();
 
 // getAll() test
 $tags = PluginTagTable::getAllTagName();
-$t->ok($tags == array('tag2', 'tag3', 'tag1', 'tag4', 'tag5', 'tag6', 'tag7', 'tag8'), 'all tags can be retrieved with getAllTagName().');
+$t->is($tags, array('tag2', 'tag3', 'tag1', 'tag4', 'tag5', 'tag6', 'tag7', 'tag8'), 'all tags can be retrieved with getAllTagName().');
 
 // getAllWithCount() test
 $tags = PluginTagTable::getAllTagNameWithCount();
-$t->ok($tags == array('tag1' => 3, 'tag2' => 2, 'tag3' => 5, 'tag4' => 2, 'tag5' => 1, 'tag6' => 1, 'tag7' => 3, 'tag8' => 1), 'all tags can be retrieved and counted with getAllTagNameWithCount().');
+$t->is($tags, array('tag1' => 3, 'tag2' => 2, 'tag3' => 5, 'tag4' => 2, 'tag5' => 1, 'tag6' => 1, 'tag7' => 3, 'tag8' => 1), 'all tags can be retrieved and counted with getAllTagNameWithCount().');
 
 // getPopulars() test
 $q = new Doctrine_Query();
 $q->limit(3); 
-$tags = PluginTagTable::getPopulars($c);
+$tags = PluginTagTable::getPopulars($q);
 $t->is(array_keys($tags), array('tag1', 'tag3', 'tag7'), 'most popular tags can be retrieved with getPopulars().');
 $t->ok($tags['tag3'] >= $tags['tag1'], 'getPopulars() preserves tag importance.');
 
