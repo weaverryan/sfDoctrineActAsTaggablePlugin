@@ -161,7 +161,7 @@ class PluginTagTable extends Doctrine_Table
                            ->groupBy('tg.taggable_id')
                            ->execute(array(), Doctrine::FETCH_ARRAY);
                            
-        foreach($qas as $cc)
+        foreach($q as $cc)
         {
             $models[] = $cc[1];
         }
