@@ -161,7 +161,7 @@ class PluginTagTable extends Doctrine_Table
                            ->groupBy('tg.taggable_id')
                            ->execute(array(), Doctrine::FETCH_ARRAY);
                            
-        foreach($qas $cc)
+        foreach($qas as $cc)
         {
             $models[] = $cc[1];
         }
@@ -220,7 +220,7 @@ class PluginTagTable extends Doctrine_Table
             $q = Doctrine_Query::create()->limit(sfConfig::get('app_sfDoctrineActAsTaggablePlugin_limit', 100));
         }
         
-        $all_tags = self::getAllTagNameWithCount($c, $options);
+        $all_tags = self::getAllTagNameWithCount($q, $options);
         return TaggableToolkit::normalize($all_tags);
     }
 
