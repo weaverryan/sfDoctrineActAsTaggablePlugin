@@ -242,44 +242,59 @@ class PluginTagTable extends Doctrine_Table
     */
     public static function getRelatedTags($tags = array(), $options = array())
     {
+        /*
+        This is the query we need... but how to execute that in doctrine...
+        
+            SELECT t.name FROM tag t WHERE t.id IN 
+            (SELECT DISTINCT(tg2.tag_id) FROM tagging tg2 WHERE tg2.taggable_id IN 
+            (SELECT DISTINCT(tg.taggable_id) FROM tagging tg WHERE tg.tag_id IN
+            (SELECT t2.id FROM tag t2 WHERE t2.name IN ("tutu"))))
+            AND t.name NOT IN ("tutu")
+        */
         $tags = TaggableToolkit::explodeTagString($tags);
-
+        
         if (is_string($tags))
         {
             $tags = array($tags);
         }
         
         $tagging_options = $options;
-
+        
         if (isset($tagging_options['limit']))
         {
-            unset($tagging_options['limit']);
+          unset($tagging_options['limit']);
         }
-
+        
         $taggings = self::getTaggings($tags, $tagging_options);
         $result = array();
-
-        foreach ($taggings as $model => $tagging)
+        
+        foreach ($taggings as $key => $tagging)
         {
-            $tag_objects = Doctrine_Query::create()
-                                         ->select('t.name')
-                                         ->from('Tag t, t.Tagging tg')
-                                         ->whereIn('tg.taggable_id', $tagging)
-                                         ->whereNotIn('t.name', $tags)
-                                         // ->addWhere('tg.taggable_model = ?')
-                                         ->orderBy('t.name DESC')
-                                         ->execute(array(), Doctrine::HYDRATE_ARRAY);
-            
-            foreach ($tag_objects as $tag)
-            {
-                $name = $tag['name'];
-                
-                if (!isset($result[$name]))
-                {
-                    $result[$name] = 0;
-                }
+            $tags_rs = Doctrine_Query::create()
+                                     ->select('t.name')
+                                     ->from('Tag t, t.Tagging tg')
+                                     ->where('tg.taggable_model = ?', $key)
+                                     ->andWhereNotIn('t.name', $tags)
+                                     ->andWhereIn('tg.taggable_id', $tagging)
+                                     ->execute(array(), Doctrine::HYDRATE_ARRAY);
+                               
+            //$c = new Criteria();
+            //$c->add(TagPeer::NAME, $tags, Criteria::NOT_IN);
+            //$c->add(TaggingPeer::TAGGABLE_ID, $tagging, Criteria::IN);
+            //$c->add(TaggingPeer::TAGGABLE_MODEL, $key);
+            //$c->addJoin(TaggingPeer::TAG_ID, TagPeer::ID);
+            //$tag_objects = TagPeer::doSelect($c);
 
-                $result[$name]++;
+            foreach ($tags_rs as $tag)
+            {
+                $tag_name = $tag['name'];
+                
+                if (!isset($result[$tag_name]))
+                {
+                    $result[$tag_name] = 0;
+                }
+                
+                $result[$tag_name]++;
             }
         }
 
@@ -290,6 +305,7 @@ class PluginTagTable extends Doctrine_Table
         }
 
         ksort($result);
+        
         return TaggableToolkit::normalize($result);
     }
 
@@ -404,12 +420,6 @@ class PluginTagTable extends Doctrine_Table
                            ->select('DISTINCT t.id')
                            ->from('Tag t INDEXBY t.id');
         
-        //FIXME:: find a way to throw away this f**g tg.id !
-        //$q = Doctrine_Query::create()
-        //                   ->select('tg.taggable_id, tg.taggable_model')
-        //                   ->from('Tagging tg, tg.Tag t')
-        //                   ->groupBy('tg.id, tg.taggable_id, tg.taggable_model');
-        
         if(count($tags) > 0)
         {
             $q->whereIn('t.name', $tags);
@@ -442,14 +452,13 @@ class PluginTagTable extends Doctrine_Table
         
         $tag_ids = $q->execute(array(), Doctrine::HYDRATE_ARRAY);
         
-        // FIXME: removed the f**g tg.id in groupBy... Doctrine bug report #588
         $q = Doctrine_Query::create()
-                           ->select('tg.taggable_id, COUNT(tg.id) AS tg_count')
+                           ->select('tg.taggable_id')
                            ->from('Tagging tg')
                            ->whereIn('tg.tag_id', array_keys($tag_ids))
-                           ->groupBy('tg.taggable_id, tg.id')
-                           ->having('count(tg.id) >= ?', $options['nb_common_tags']);
-        
+                           ->groupBy('tg.taggable_id')
+                           ->having('count(tg.taggable_model) >= ?', $options['nb_common_tags']);
+
         // Taggable model class option
         if (isset($options['model']))
         {
