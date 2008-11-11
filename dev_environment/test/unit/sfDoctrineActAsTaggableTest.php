@@ -24,13 +24,13 @@ if (!defined('TEST_CLASS') || !class_exists(TEST_CLASS)
 }
 
 // initialize database manager
-//$databaseManager = new sfDatabaseManager();
-//$databaseManager->initialize();
+// $databaseManager = new sfDatabaseManager();
+// $databaseManager->initialize();
 
 // clean the database
-//Doctrine::getTable('Tagging')->findAll()->delete();
-//Doctrine::getTable('Tag')->findAll()->delete();
-//Doctrine::getTable(TEST_CLASS)->findAll()->delete();
+// Doctrine::getTable('Tagging')->findAll()->delete();
+// Doctrine::getTable('Tag')->findAll()->delete();
+// Doctrine::getTable(TEST_CLASS)->findAll()->delete();
 
 // start tests
 $t = new lime_test(90, new lime_output_color());
@@ -161,9 +161,7 @@ $object2->save();
 $id2 = $object2->id;
 
 $object2_copy = Doctrine::getTable(TEST_CLASS_2)->find($id2);
-//print_r($object2->getTags());
 $object2_copy->addTag('clever');
-//print_r($object2_copy->getTags());
 $t->ok($object2_copy->hasTag('clever') && !$object2->hasTag('clever'), 'tags are applied to the object instances independently.');
 
 $object = _create_object(TEST_CLASS);
@@ -172,7 +170,7 @@ $object->addTag('titi');
 $object->save();
 $object->addTag('tata');
 $object->removeAllTags();
-$t->ok(!$object->hasTag(), 'tags can all be removed at once.');
+$t->ok(!$object->hasTag('titi'), 'tags can all be removed at once.');
 
 $object = _create_object(TEST_CLASS);
 $object->addTag('toto,international,tata');
@@ -328,16 +326,16 @@ $object5->save();
 
 // getAll() test
 $tags = PluginTagTable::getAllTagName();
-$t->ok($tags == array('tag2', 'tag3', 'tag1', 'tag4', 'tag5', 'tag6', 'tag7', 'tag8'), 'all tags can be retrieved with getAllTagName().');
+$t->is($tags, array('tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6', 'tag7', 'tag8'), 'all tags can be retrieved with getAllTagName().');
 
 // getAllWithCount() test
 $tags = PluginTagTable::getAllTagNameWithCount();
-$t->ok($tags == array('tag1' => 3, 'tag2' => 2, 'tag3' => 5, 'tag4' => 2, 'tag5' => 1, 'tag6' => 1, 'tag7' => 3, 'tag8' => 1), 'all tags can be retrieved and counted with getAllTagNameWithCount().');
+$t->is($tags, array('tag1' => 3, 'tag2' => 2, 'tag3' => 5, 'tag4' => 2, 'tag5' => 1, 'tag6' => 1, 'tag7' => 3, 'tag8' => 1), 'all tags can be retrieved and counted with getAllTagNameWithCount().');
 
 // getPopulars() test
-$c = new Doctrine_Query();
-$c->limit(3); 
-$tags = PluginTagTable::getPopulars($c);
+$q = new Doctrine_Query();
+$q->limit(3); 
+$tags = PluginTagTable::getPopulars($q);
 $t->is(array_keys($tags), array('tag1', 'tag3', 'tag7'), 'most popular tags can be retrieved with getPopulars().');
 $t->ok($tags['tag3'] >= $tags['tag1'], 'getPopulars() preserves tag importance.');
 
@@ -346,7 +344,7 @@ $tags = PluginTagTable::getRelatedTags('tag8');
 $t->is(array_keys($tags), array('tag2', 'tag3', 'tag7'), 'related tags can be retrieved with getRelatedTags().');
 
 $tags = PluginTagTable::getRelatedTags('tag2', array('limit' => 1));
-$t->is(array_keys($tags), array('tag3'), 'when a limit is set, only most popular related tags are returned by getRelatedTags().');
+$t->is(array_keys($tags), array('tag7'), 'when a limit is set, only most popular related tags are returned by getRelatedTags().');
 
 // getRelatedTags() test
 $tags = PluginTagTable::getRelatedTags('tag7');
