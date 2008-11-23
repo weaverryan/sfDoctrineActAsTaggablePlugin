@@ -142,9 +142,9 @@ class Taggable extends Doctrine_Template
         return $object->_tags;
     }
 
-    public static function add_tag($object, $tag)
+    public static function add_tag($object, $tag, $options = array())
     {
-        $tag = TaggableToolkit::cleanTagName($tag);
+        $tag = TaggableToolkit::cleanTagName($tag, $options);
 
         if (strlen($tag) > 0)
         {
@@ -222,7 +222,7 @@ class Taggable extends Doctrine_Template
     *
     * @param      mixed       $tagname
     */
-    public function addTag($tagname)
+    public function addTag($tagname, $options = array())
     {
         $tagname = TaggableToolkit::explodeTagString($tagname);
 
@@ -230,7 +230,7 @@ class Taggable extends Doctrine_Template
         {
             foreach ($tagname as $tag)
             {
-                $this->addTag($tag);
+                $this->addTag($tag, $options);
             }
         }
         else
@@ -272,7 +272,7 @@ class Taggable extends Doctrine_Template
                 
                 if (!isset($saved_tags[$tagname]))
                 {
-                    $this->add_tag($this->getInvoker(), $tagname);
+                    $this->add_tag($this->getInvoker(), $tagname, $options);
                 }
             }
         }

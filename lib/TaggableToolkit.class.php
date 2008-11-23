@@ -18,9 +18,15 @@ class TaggableToolkit
     * @param      String    $tag
     * @return     bool
     */
-    public static function cleanTagName($tag)
+    public static function cleanTagName($tag, $options = array())
     {
-        return trim(rtrim(str_replace(',', ' ', $tag)));
+        $tag = trim(rtrim(str_replace(',', ' ', $tag)));
+        
+        if(isset($options['case']))
+        {
+          $tag = call_user_func($options['case'], $tag);
+        }
+        return $tag;
     }
 
     /**
@@ -30,7 +36,7 @@ class TaggableToolkit
     * @param      mixed     $tag
     * @return     mixed -> array or the $tag passed as reference...
     */
-    public static function explodeTagString($tag)
+    public static function explodeTagString($tag, $options = array())
     {
         if (is_string($tag)
             && (false !== strpos($tag, ',') || preg_match('/\n/', $tag)))
