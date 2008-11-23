@@ -161,9 +161,7 @@ $object2->save();
 $id2 = $object2->id;
 
 $object2_copy = Doctrine::getTable(TEST_CLASS_2)->find($id2);
-//print_r($object2->getTags());
 $object2_copy->addTag('clever');
-//print_r($object2_copy->getTags());
 $t->ok($object2_copy->hasTag('clever') && !$object2->hasTag('clever'), 'tags are applied to the object instances independently.');
 
 $object = _create_object(TEST_CLASS);
@@ -328,7 +326,7 @@ $object5->save();
 
 // getAll() test
 $tags = PluginTagTable::getAllTagName();
-$t->is($tags, array('tag2', 'tag3', 'tag1', 'tag4', 'tag5', 'tag6', 'tag7', 'tag8'), 'all tags can be retrieved with getAllTagName().');
+$t->is($tags, array('tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6', 'tag7', 'tag8'), 'all tags can be retrieved with getAllTagName().');
 
 // getAllWithCount() test
 $tags = PluginTagTable::getAllTagNameWithCount();
@@ -346,7 +344,7 @@ $tags = PluginTagTable::getRelatedTags('tag8');
 $t->is(array_keys($tags), array('tag2', 'tag3', 'tag7'), 'related tags can be retrieved with getRelatedTags().');
 
 $tags = PluginTagTable::getRelatedTags('tag2', array('limit' => 1));
-$t->is(array_keys($tags), array('tag3'), 'when a limit is set, only most popular related tags are returned by getRelatedTags().');
+$t->is(array_keys($tags), array('tag7'), 'when a limit is set, only most popular related tags are returned by getRelatedTags().');
 
 // getRelatedTags() test
 $tags = PluginTagTable::getRelatedTags('tag7');
@@ -541,8 +539,25 @@ $tags_triple = PluginTagTable::getAllTagName(null, array('triple' => true, 'name
 $t->ok(count($tags_triple) == 3, 'it is possible to apply triple tags to various objects when the plugin is set up so that namespace:key is a unique key.');
 
 
+// clean the database
+Doctrine::getTable('Tagging')->findAll()->delete();
+Doctrine::getTable('Tag')->findAll()->delete();
+Doctrine::getTable(TEST_CLASS)->findAll()->delete();
 
-// test object creation
+// Test ability to use different options for tag
+// - change case type
+// - use personnalised separator
+$obj = _create_object(TEST_CLASS);
+$obj->addTag('loutre, MonSieur', array('case' => 'strtolower'));
+$t->is($obj->getTags(), array('monsieur' => 'monsieur', 'loutre' => 'loutre'), 'We can specify PHP methods to change the tag case');
+
+unset($obj);
+
+$obj = _create_object(TEST_CLASS);
+$obj->addTag('loutre aime, monsieur', array('separator' => array(' ', ',')));
+$t->is($obj->getTags(), array('monsieur' => 'monsieur', 'aime' => 'aime', 'loutre' => 'loutre'), 'We can specify how to separate tags');
+
+
 function _create_object($name)
 {
     $classname = $name;
