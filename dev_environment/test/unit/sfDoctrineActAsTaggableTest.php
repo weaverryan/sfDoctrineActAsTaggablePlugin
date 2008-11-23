@@ -539,8 +539,25 @@ $tags_triple = PluginTagTable::getAllTagName(null, array('triple' => true, 'name
 $t->ok(count($tags_triple) == 3, 'it is possible to apply triple tags to various objects when the plugin is set up so that namespace:key is a unique key.');
 
 
+// clean the database
+Doctrine::getTable('Tagging')->findAll()->delete();
+Doctrine::getTable('Tag')->findAll()->delete();
+Doctrine::getTable(TEST_CLASS)->findAll()->delete();
 
-// test object creation
+// Test ability to use different options for tag
+// - change case type
+// - use personnalised separator
+$obj = _create_object(TEST_CLASS);
+$obj->addTag('loutre, MonSieur', array('case' => 'strtolower'));
+$t->is($obj->getTags(), array('monsieur' => 'monsieur', 'loutre' => 'loutre'), 'We can specify PHP methods to change the tag case');
+
+unset($obj);
+
+$obj = _create_object(TEST_CLASS);
+$obj->addTag('loutre aime, monsieur', array('separator' => array(' ', ',')));
+$t->is($obj->getTags(), array('monsieur' => 'monsieur', 'aime' => 'aime', 'loutre' => 'loutre'), 'We can specify how to separate tags');
+
+
 function _create_object($name)
 {
     $classname = $name;
