@@ -83,6 +83,7 @@ class TaggableListener extends Doctrine_Record_Listener
                                              ->from('tag t INDEXBY t.id')
                                              ->whereIn('t.name', $removed_tags)
                                              ->execute(array(), Doctrine::HYDRATE_ARRAY);
+                                             
             
             Doctrine_Query::create()
                           ->delete()
@@ -107,7 +108,41 @@ class TaggableListener extends Doctrine_Record_Listener
     */
     public function preDelete(Doctrine_Event $event)
     {
-        $object = $event->getInvoker()->removeAllTags();
+      
+        $event->getInvoker()->removeAllTags();
+        $object = $event->getInvoker();
+        
+//        $tagsToRemove = array_values(Taggable::getTagsHolder($object)->getAll('removed_tags'));
+//        $q = new Doctrine_Query;
+//        $q->select('t.id')
+//          ->from('Tag t')
+//          ->whereIn('t.name', $tagsToRemove)
+//        ;
+//        $tagsToRemoveIdsDoctrine = $q->execute(array(), Doctrine::HYDRATE_ARRAY);
+//        
+//        $tagsToRemoveIds = array();
+//        foreach ($tagsToRemoveIdsDoctrine as $value)
+//        {
+//          $tagsToRemoveIds[] = (int) $value['id'];
+//        }
+//        
+//        $q = new Doctrine_Query;
+//        $q->delete('Tagging tg')
+//          ->whereIn('tg.id', $tagsToRemoveIds)
+//          ->addWhere('tg.taggable_id = ?', $object->id)
+//          ->addWhere('tg.taggable_model = ?', get_class($object))
+//        ;
+////        var_dump($q->getQuery());
+////        var_dump($q->getParams());
+//        $q->execute();
+
+        $q = new Doctrine_Query;
+        $q->delete('Tagging tg')
+          ->addWhere('tg.taggable_id = ?', $object->id)
+          ->addWhere('tg.taggable_model = ?', get_class($object))
+        ;
+        $q->execute();
+        
     }
 }
 
@@ -251,11 +286,13 @@ class Taggable extends Doctrine_Template
                 {
                     // the binome namespace:key must be unique
                     $triple = TaggableToolkit::extractTriple($tagname);
-                
+                    
                     if (!is_null($triple[1]) && !is_null($triple[2]))
-                    {
-                        $pattern = '/^'.$triple[1].':'.$triple[2].'=(.*)$/';
+                    {                       
                         $tags = $this->getTags(array('triple' => true, 'return' => 'tag'));
+                        
+                        $pattern = '/^'.$triple[1].':'.$triple[2].'=(.*)$/';
+                        
                         $removed = array();
                     
                         foreach ($tags as $tag)
@@ -266,7 +303,7 @@ class Taggable extends Doctrine_Template
                             }
                         }
                     
-                        $this->removeTag($this->getInvoker(), $removed);
+                        $this->removeTag($removed);
                     }
                 }
                 
@@ -533,21 +570,20 @@ class Taggable extends Doctrine_Template
         $saved_tags = $this->getSavedTags();
         
         $this->set_saved_tags($this->getInvoker(), array());
-        $this->set_tags($this->getInvoker(), array());
+        $this->set_tags($this->getInvoker(), array());        
         $this->set_removed_tags($this->getInvoker(), array_merge($this->get_removed_tags($this->getInvoker()) , $saved_tags));
     }
 
     /**
-    * Removes a tag or a set of tags from the object. As usual, the second
+    * Removes a tag or a set of tags from the object. The
     * parameter might be an array of tags or a comma-separated string.
     *
-    * @param       $object
     * @param      mixed       $tagname
     */
     public function removeTag($tagname)
     {
         $tagname = TaggableToolkit::explodeTagString($tagname);
-
+        
         if (is_array($tagname))
         {
             foreach ($tagname as $tag)

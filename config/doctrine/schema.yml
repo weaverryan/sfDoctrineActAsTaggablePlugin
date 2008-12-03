@@ -1,14 +1,19 @@
 Tag:
   columns:
-    id:
-      type: integer(4)
-      primary: true
-      autoincrement: true
-    name:             varchar(100)
-    is_triple:        boolean
-    triple_namespace: varchar(100)
-    triple_key:       varchar(100)
-    triple_value:     varchar(100)
+#    id:
+#      type: integer(4)
+#      primary: true
+#      autoincrement: true
+    name:
+      type:           string(100)
+    is_triple:        
+      type:           boolean
+    triple_namespace: 
+      type:           string(100)
+    triple_key:       
+      type:           string(100)
+    triple_value:     
+      type:           string(100)
   indexes:
     name:
       fields: name
@@ -20,19 +25,20 @@ Tag:
       fields: triple_value
         
 Tagging:
+  columns:
+#    id:
+#      type: integer(4)
+#      primary: true
+#      autoincrement: true
+    tag_id:           
+      type:           integer
+      notnull:        true
+    taggable_model:   
+      type:           string(30)
+    taggable_id:      
+      type:           integer
   relations:
     Tag:
-      foreignType: one
-  columns:
-    id:
-      type: integer(4)
-      primary: true
-      autoincrement: true
-    tag_id:           
-      type: integer(4)
-      notnull: true
-    taggable_model:   varchar(30)
-    taggable_id:      integer
   indexes:
     tag:
       fields: tag_id

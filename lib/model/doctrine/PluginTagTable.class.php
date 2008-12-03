@@ -52,14 +52,15 @@ class PluginTagTable extends Doctrine_Table
             $q->addWhere('t.triple_value = ?', $options['value']);
         }
         
-        return array_keys($q->orderBy('t.name')->execute(array(), Doctrine::HYDRATE_ARRAY));
+//        return array_keys($q->orderBy('t.name')->execute(array(), Doctrine::HYDRATE_ARRAY));
+        return array_keys($q->execute(array(), Doctrine::HYDRATE_ARRAY));
     }
 
     /**
     * Returns all tags, sorted by name, with their number of occurencies.
-    * The first optionnal parameter permits to add some restrictions on the
+    * The first optional parameter permits to add some restrictions on the
     * objects the selected tags are related to.
-    * The second optionnal parameter permits to restrict the tag selection with
+    * The second optional parameter permits to restrict the tag selection with
     * different criterias
     *
     * @param      Doctrine_Query    $c
@@ -68,15 +69,15 @@ class PluginTagTable extends Doctrine_Table
     */
     public static function getAllTagNameWithCount(Doctrine_Query $q = null, $options = array())
     {
-        $tags = array();
+        
 
         if ($q == null)
         {
             $q = Doctrine_Query::create();
         }
         
-        $q->select('t.name, COUNT(tg.id) AS t_count')
-          ->from('Tag t, t.Tagging tg');
+        $q->select('tg.tag_id, t.name, COUNT(tg.id) AS t_count')
+          ->from('Tagging tg, tg.Tag t');
 
         if (isset($options['limit']))
         {
@@ -85,7 +86,7 @@ class PluginTagTable extends Doctrine_Table
 
         if (isset($options['model']))
         {
-            $q->addWhere('t.Tagging.taggable_model = ?', $options['model']);
+            $q->addWhere('tg.taggable_model = ?', $options['model']);
         }
 
         if (isset($options['like']))
@@ -113,14 +114,18 @@ class PluginTagTable extends Doctrine_Table
             $q->addWhere('t.triple_value = ?', $options['value']);
         }
         
-        $rs = $q->groupBy('t.id, t.name')
-                ->orderBy('t_count DESC, t.name ASC')
-                ->execute(array(), Doctrine::HYDRATE_ARRAY);
+        $q->groupBy('tg.tag_id') // , t.name ?
+          ->orderBy('t_count DESC, t.name ASC')
+        ;
+        
+        $rs = $q->execute(array(), Doctrine::HYDRATE_ARRAY);
+        
+        $tags = array();
         
         foreach($rs as $tag)
         {
-            $name = $tag['name'];
-            $tags[$name] = $tag['Tagging']['t_count'];
+            $name = $tag['Tag']['name'];
+            $tags[$name] = $tag['t_count'];
         }
 
         if (!isset($options['sort_by_popularity']) || (true !== $options['sort_by_popularity']))
