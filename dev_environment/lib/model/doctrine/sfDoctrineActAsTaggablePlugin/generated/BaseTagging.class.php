@@ -8,9 +8,8 @@ abstract class BaseTagging extends sfDoctrineRecord
   public function setTableDefinition()
   {
     $this->setTableName('tagging');
-    $this->hasColumn('id', 'integer', 4, array('type' => 'integer', 'primary' => true, 'autoincrement' => true, 'length' => '4'));
-    $this->hasColumn('tag_id', 'integer', 4, array('type' => 'integer', 'notnull' => true, 'length' => '4'));
-    $this->hasColumn('taggable_model', 'varchar', 30, array('type' => 'varchar', 'length' => '30'));
+    $this->hasColumn('tag_id', 'integer', null, array('type' => 'integer', 'notnull' => true));
+    $this->hasColumn('taggable_model', 'string', 30, array('type' => 'string', 'length' => '30'));
     $this->hasColumn('taggable_id', 'integer', null, array('type' => 'integer'));
 
 

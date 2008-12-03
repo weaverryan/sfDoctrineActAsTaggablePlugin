@@ -8,12 +8,11 @@ abstract class BaseTag extends sfDoctrineRecord
   public function setTableDefinition()
   {
     $this->setTableName('tag');
-    $this->hasColumn('id', 'integer', 4, array('type' => 'integer', 'primary' => true, 'autoincrement' => true, 'length' => '4'));
-    $this->hasColumn('name', 'varchar', 100, array('type' => 'varchar', 'length' => '100'));
+    $this->hasColumn('name', 'string', 100, array('type' => 'string', 'length' => '100'));
     $this->hasColumn('is_triple', 'boolean', null, array('type' => 'boolean'));
-    $this->hasColumn('triple_namespace', 'varchar', 100, array('type' => 'varchar', 'length' => '100'));
-    $this->hasColumn('triple_key', 'varchar', 100, array('type' => 'varchar', 'length' => '100'));
-    $this->hasColumn('triple_value', 'varchar', 100, array('type' => 'varchar', 'length' => '100'));
+    $this->hasColumn('triple_namespace', 'string', 100, array('type' => 'string', 'length' => '100'));
+    $this->hasColumn('triple_key', 'string', 100, array('type' => 'string', 'length' => '100'));
+    $this->hasColumn('triple_value', 'string', 100, array('type' => 'string', 'length' => '100'));
 
 
     $this->index('name', array('fields' => 'name'));
@@ -24,7 +23,7 @@ abstract class BaseTag extends sfDoctrineRecord
 
   public function setUp()
   {
-    $this->hasOne('Tagging', array('local' => 'id',
-                                   'foreign' => 'tag_id'));
+    $this->hasMany('Tagging', array('local' => 'id',
+                                    'foreign' => 'tag_id'));
   }
 }
