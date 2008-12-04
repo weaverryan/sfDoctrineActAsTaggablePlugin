@@ -137,7 +137,8 @@ class TaggableListener extends Doctrine_Record_Listener
 //        $q->execute();
 
         $q = new Doctrine_Query;
-        $q->delete('Tagging tg')
+        $q->delete('Tagging')
+          ->from('Tagging tg')
           ->addWhere('tg.taggable_id = ?', $object->id)
           ->addWhere('tg.taggable_model = ?', get_class($object))
         ;
