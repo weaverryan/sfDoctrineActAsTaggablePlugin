@@ -116,7 +116,7 @@ class PluginTagTable extends Doctrine_Table
         
         if (isset($options['min_tags_count']))
         {
-            $q->having('t_count > ?', $options['min_tags_count']);
+            $q->having('t_count >= ?', $options['min_tags_count']);
         }
         
         $q->groupBy('tg.tag_id') // , t.name ?
