@@ -33,7 +33,7 @@ if (!defined('TEST_CLASS') || !class_exists(TEST_CLASS)
 //Doctrine::getTable(TEST_CLASS)->findAll()->delete();
 
 // start tests
-$t = new lime_test(90, new lime_output_color());
+$t = new lime_test(91, new lime_output_color());
 
 $object = _create_object(TEST_CLASS);
 $object->title = 'object';
@@ -338,6 +338,9 @@ $t->diag('tag clouds');
   // getAllWithCount() test
   $tags = PluginTagTable::getAllTagNameWithCount();
   $t->is($tags, array('tag1' => 3, 'tag2' => 2, 'tag3' => 5, 'tag4' => 2, 'tag5' => 1, 'tag6' => 1, 'tag7' => 3, 'tag8' => 1), 'all tags can be retrieved and counted with getAllTagNameWithCount().');
+  
+  $tags = PluginTagTable::getAllTagNameWithCount(null, array('min_tags_count' => 2));
+  $t->is($tags, array('tag1' => 3, 'tag2' => 2, 'tag3' => 5, 'tag4' => 2, 'tag7' => 3), 'tags can be retrieved and counted with getAllTagNameWithCount() according to the min occurencies');
   
   // getPopulars() test
   $q = new Doctrine_Query();
