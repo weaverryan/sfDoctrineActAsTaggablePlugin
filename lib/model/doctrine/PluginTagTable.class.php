@@ -114,6 +114,11 @@ class PluginTagTable extends Doctrine_Table
             $q->addWhere('t.triple_value = ?', $options['value']);
         }
         
+        if (isset($options['min_tags_count']))
+        {
+            $q->having('t_count > ?', $options['min_tags_count']);
+        }
+        
         $q->groupBy('tg.tag_id') // , t.name ?
           ->orderBy('t_count DESC, t.name ASC')
         ;
@@ -170,38 +175,7 @@ class PluginTagTable extends Doctrine_Table
         {
             $models[] = $cc[1];
         }
-                           
-    // $q = new Criteria();
-    // $q->addJoin(TagPeer::ID, TaggingPeer::TAG_ID);
-    // $q->add(TagPeer::NAME, $tags, Criteria::IN);
-    // $q->addGroupByColumn(TaggingPeer::TAGGABLE_ID);
-    // $having = $q->getNewCriterion(TagPeer::COUNT, count($tags), Criteria::GREATER_EQUAL);
-    // $q->addHaving($having);
-    // $q->clearSelectColumns();
-    // $q->addSelectColumn(TaggingPeer::TAGGABLE_MODEL);
-    // $q->addSelectColumn(TaggingPeer::TAGGABLE_ID);
-    // 
-    // $params = array();
-    // $sql = BasePeer::createSelectSql($c, $params);
-    // $con = Propel::getConnection();
-    // $stmt = $con->prepareStatement($sql);
-    // $position = 1;
-    // 
-    // foreach ($tags as $tag)
-    // {
-    //   $stmt->setString($position, $tag);
-    //   $position++;
-    // }
-    // 
-    // $stmt->setString($position, count($tags));
-    // $rs = $stmt->executeQuery(ResultSet::FETCHMODE_NUM);
-    // $models = array();
-    // 
-    // while ($rs->next())
-    // {
-    //   $models[] = $rs->getString(1);
-    // }
-
+        
         return $models;
     }
 
@@ -247,15 +221,6 @@ class PluginTagTable extends Doctrine_Table
     */
     public static function getRelatedTags($tags = array(), $options = array())
     {
-        /*
-        This is the query we need... but how to execute that in doctrine...
-        
-            SELECT t.name FROM tag t WHERE t.id IN 
-            (SELECT DISTINCT(tg2.tag_id) FROM tagging tg2 WHERE tg2.taggable_id IN 
-            (SELECT DISTINCT(tg.taggable_id) FROM tagging tg WHERE tg.tag_id IN
-            (SELECT t2.id FROM tag t2 WHERE t2.name IN ("tutu"))))
-            AND t.name NOT IN ("tutu")
-        */
         $tags = TaggableToolkit::explodeTagString($tags);
         
         if (is_string($tags))
@@ -282,14 +247,7 @@ class PluginTagTable extends Doctrine_Table
                                      ->andWhereNotIn('t.name', $tags)
                                      ->andWhereIn('tg.taggable_id', $tagging)
                                      ->execute(array(), Doctrine::HYDRATE_ARRAY);
-                               
-            //$c = new Criteria();
-            //$c->add(TagPeer::NAME, $tags, Criteria::NOT_IN);
-            //$c->add(TaggingPeer::TAGGABLE_ID, $tagging, Criteria::IN);
-            //$c->add(TaggingPeer::TAGGABLE_MODEL, $key);
-            //$c->addJoin(TaggingPeer::TAG_ID, TagPeer::ID);
-            //$tag_objects = TagPeer::doSelect($c);
-
+            
             foreach ($tags_rs as $tag)
             {
                 $tag_name = $tag['name'];
