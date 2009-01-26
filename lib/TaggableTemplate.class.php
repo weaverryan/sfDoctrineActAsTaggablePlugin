@@ -59,15 +59,13 @@ class TaggableListener extends Doctrine_Record_Listener
 
         $object = $event->getInvoker();
         
-        $tags = Taggable::get_tags($object) ;
-        
-        $removed_tags = array_map("addslashes", Taggable::get_removed_tags($object) );
-        $removed_tags = "'" . implode("','", $removed_tags) . "'";
+        $added_tags = Taggable::get_tags($object);
+        $removed_tags = array_keys(Taggable::get_removed_tags($object));
         
         // save new tags
-        foreach ($tags as $tagname)
+        foreach ($added_tags as $tagname)
         {
-            $tag = PluginTagTable::findOrCreateByTagName($tagname); // TagPeer::retrieveOrCreateByTagName($tagname);
+            $tag = PluginTagTable::findOrCreateByTagName($tagname);
             $tag->save();
             $tagging = new Tagging();
             $tagging->tag_id = $tag->id;
@@ -76,22 +74,20 @@ class TaggableListener extends Doctrine_Record_Listener
             $tagging->save();
         }
         
-        if(count(Taggable::get_removed_tags($object) ) > 0)
+        if($removed_tags)
         {
-            $removed_tag_ids = Doctrine_Query::create()
-                                             ->select('t.id')
-                                             ->from('tag t INDEXBY t.id')
-                                             ->whereIn('t.name', $removed_tags)
-                                             ->execute(array(), Doctrine::HYDRATE_ARRAY);
-                                             
+            $q = Doctrine::getTable('Tag')->createQuery('t INDEXBY id')
+							->select('id')
+							->whereIn('t.name', $removed_tags);
+								
+            $removed_tag_ids = array_keys($q->execute(array(), Doctrine::HYDRATE_ARRAY));
             
-            Doctrine_Query::create()
-                          ->delete()
-                          ->from('tagging tg')
-                          ->whereIn('tg.tag_id', array_keys($removed_tag_ids))
-                          ->addWhere('tg.taggable_id = ?', $object->id)
-                          ->addWhere('tg.taggable_model = ?', get_class($object))
-                          ->execute();
+            Doctrine::getTable('Tagging')->createQuery()
+	            ->delete()
+	            ->whereIn('tag_id', $removed_tag_ids)
+	            ->addWhere('taggable_id = ?', $object->id)
+	            ->addWhere('taggable_model = ?', get_class($object))
+	            ->execute();
         }
 
         $tags = array_merge(Taggable::get_tags($object) , $object->getSavedTags());
@@ -102,48 +98,20 @@ class TaggableListener extends Doctrine_Record_Listener
     }
 
     /**
-    * Taggings removing logic, runned before the object himself has been deleted
+    * Delete related Taggings when this object is deleted
     *
     * @param      Doctrine_Event $event
     */
     public function preDelete(Doctrine_Event $event)
     {
       
-        $event->getInvoker()->removeAllTags();
         $object = $event->getInvoker();
         
-//        $tagsToRemove = array_values(Taggable::getTagsHolder($object)->getAll('removed_tags'));
-//        $q = new Doctrine_Query;
-//        $q->select('t.id')
-//          ->from('Tag t')
-//          ->whereIn('t.name', $tagsToRemove)
-//        ;
-//        $tagsToRemoveIdsDoctrine = $q->execute(array(), Doctrine::HYDRATE_ARRAY);
-//        
-//        $tagsToRemoveIds = array();
-//        foreach ($tagsToRemoveIdsDoctrine as $value)
-//        {
-//          $tagsToRemoveIds[] = (int) $value['id'];
-//        }
-//        
-//        $q = new Doctrine_Query;
-//        $q->delete('Tagging tg')
-//          ->whereIn('tg.id', $tagsToRemoveIds)
-//          ->addWhere('tg.taggable_id = ?', $object->id)
-//          ->addWhere('tg.taggable_model = ?', get_class($object))
-//        ;
-////        var_dump($q->getQuery());
-////        var_dump($q->getParams());
-//        $q->execute();
-
-        $q = new Doctrine_Query;
-        $q->delete('Tagging')
-          ->from('Tagging tg')
-          ->addWhere('tg.taggable_id = ?', $object->id)
-          ->addWhere('tg.taggable_model = ?', get_class($object))
-        ;
-        $q->execute();
-        
+        Doctrine::getTable('Tagging')->createQuery()
+          ->delete()
+          ->addWhere('taggable_id = ?', $object->id)
+          ->addWhere('taggable_model = ?', get_class($object))
+          ->execute();
     }
 }
 
