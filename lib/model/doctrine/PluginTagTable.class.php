@@ -493,6 +493,11 @@ class PluginTagTable extends Doctrine_Table
         return $tag;
     }
     
+    /**
+     * Remove Tags without associations in Tagging table
+     * 
+     * @return array
+     */
     public static function purgeOrphans() {
       $q = Doctrine::getTable('Tag')->createQuery('t INDEXBY t.id')
         ->select('t.id')
