@@ -172,4 +172,19 @@ class TaggableToolkit
 
         return $tags;
     }
+    
+    /**
+	   * Transform every $tagname in $tags to namespace:key=$tagname:
+	   * array_walk($tags, 'TaggableToolkit::triplify', 'namespace:key');
+     * 
+     * @param String $tagname
+     * @param String $array_key
+     * @param String $ns_key
+     * @return String
+     */
+    public static function triplify(&$tagname, $array_key, $ns_key) {
+      $tagname = trim(rtrim($tagname));
+      $tagname = $ns_key.'='.$tagname;
+      return $tagname;
+    }
 }
