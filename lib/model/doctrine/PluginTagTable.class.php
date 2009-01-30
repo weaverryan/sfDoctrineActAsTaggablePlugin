@@ -492,4 +492,15 @@ class PluginTagTable extends Doctrine_Table
         
         return $tag;
     }
+    
+    public static function purgeOrphans() {
+      $q = Doctrine::getTable('Tag')->createQuery('t INDEXBY t.id')
+        ->select('t.id')
+        ->addWhere('NOT EXISTS (SELECT tg.id FROM Tagging tg WHERE tg.tag_id = t.id)');
+        
+      $orphans = $q->execute();
+      $orphan_data = $orphans->toArray(false);
+      $orphans->delete();
+      return $orphan_data;
+    }
 }
