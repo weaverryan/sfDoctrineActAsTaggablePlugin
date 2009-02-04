@@ -41,9 +41,9 @@ Tagging:
     Tag:
   indexes:
     tag:
-      fields: tag_id
+      fields: [tag_id]
     taggable:
-      fields: taggable_model, taggable_id
+      fields: [taggable_model, taggable_id]
   attributes:
     # don't export constraints. This is necessary because multiple models can 
     #  join Tagging on taggable_id
