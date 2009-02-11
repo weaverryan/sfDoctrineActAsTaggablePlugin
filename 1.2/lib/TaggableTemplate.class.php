@@ -445,6 +445,18 @@ class Taggable extends Doctrine_Template
       $tags = $this->getTags($options);
       return $tags;
     }
+    
+    public function setTagsTriple($ns, $key, $tags) {
+      $this->removeAllTagsTriple($ns, $key);
+      $tags = (array) TaggableToolkit::explodeTagString($tags);
+      array_walk($tags, 'TaggableToolkit::triplify', $ns.':'.$key);
+      $this->addTag($tags);
+    }
+    
+    public function removeAllTagsTriple($ns, $key) {
+      $tags = $this->getTagsTriple($ns, $key, false, 'tag');
+      $this->removeTag($tags);
+    }
 
     /**
     * Returns true if the object has a tag. If a tag ar an array of tags is
