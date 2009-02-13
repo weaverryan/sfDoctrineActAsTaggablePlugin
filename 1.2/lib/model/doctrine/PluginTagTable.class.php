@@ -513,11 +513,12 @@ class PluginTagTable extends Doctrine_Table
     }
     
     public static function getTagKeysForCollection(Doctrine_Collection $coll) {
-			$q = Doctrine_Query::create()
-				->select('t.id')
-		    ->from('Tag t INDEXBY t.id, t.Tagging tg')
-	      ->addWhere('tg.taggable_model =?', $coll->getTable()->getComponentName())
-	      ->whereIn('tg.taggable_id', $coll->getPrimaryKeys());
+      $model = $coll->getTable()->getComponentName();
+      $tagging = Doctrine::getTable($model.'Tagging');
+      $q = $tagging->createQuery('tg INDEXBY tg.tag_id')
+        ->select('tg.tag_id, tg.taggable_model')
+        ->groupBy('tg.tag_id')
+        ->whereIn('tg.taggable_id', $coll->getPrimaryKeys());
 	    $tags = $q->execute(array(), Doctrine::HYDRATE_ARRAY);      
 	    $keys = array_keys($tags);
 	    return $keys;
