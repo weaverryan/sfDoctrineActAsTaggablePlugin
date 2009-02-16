@@ -55,6 +55,25 @@ class PluginTagTable extends Doctrine_Table
 //        return array_keys($q->orderBy('t.name')->execute(array(), Doctrine::HYDRATE_ARRAY));
         return array_keys($q->execute(array(), Doctrine::HYDRATE_ARRAY));
     }
+    
+    public static function getAllTagTriple($ns, $key, $serialize = false, $return = 'triple_value') {
+      $q = Doctrine_Query::create()
+        ->from('Tag t INDEXBY t.'.$return)
+        ->addWhere('t.triple_namespace = ?', $ns)
+        ->addWhere('t.triple_key = ?', $key);
+      $tags = array_keys($q->fetchArray());
+      if ($serialize) $tags = implode(',',$tags); 
+      return $tags;
+    }
+    
+    public function findByTriple($ns, $key = null, $value = null) {
+      $q = Doctrine_Query::create()->from('Tag t');
+      $q->addWhere('t.triple_namespace = ?', $ns);
+      $key   && $q->addWhere('t.triple_key = ?', $key);
+      $value && $q->addWhere('t.triple_value = ?', $value);
+      $triples = $q->execute();
+      return $triples;
+    }
 
     /**
     * Returns all tags, sorted by name, with their number of occurencies.
