@@ -76,9 +76,9 @@ class TaggableListener extends Doctrine_Record_Listener
         
         if($removed_tags)
         {
-            $q = Doctrine::getTable('Tag')->createQuery('t INDEXBY id')
-							->select('id')
-							->whereIn('t.name', $removed_tags);
+            $q = Doctrine_Query::create()->select('t.id')
+                ->from('Tag t INDEXBY t.id')
+                ->whereIn('t.name', $removed_tags);
 								
             $removed_tag_ids = array_keys($q->execute(array(), Doctrine::HYDRATE_ARRAY));
             
