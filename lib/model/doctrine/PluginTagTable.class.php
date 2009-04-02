@@ -350,7 +350,14 @@ class PluginTagTable extends Doctrine_Table
         $taggings = self::getTaggings($tags, array('model' => $model));
         $tagging = isset($taggings[$model]) ? $taggings[$model] : array();
         
-        $q->whereIn($model . '.id', $tagging);
+        if (empty($tagging))
+        {
+          $q->where('false');
+        }
+        else
+        {
+          $q->whereIn($model . '.id', $tagging);
+        }
         
         return $q;
     }
