@@ -347,7 +347,7 @@ class PluginTagTable extends Doctrine_Table
             $q = Doctrine_Query::create()->from($model);
         }
         
-        $taggings = self::getTaggings($tags, array('model' => $model));
+        $taggings = self::getTaggings($tags, array_merge(array('model' => $model), $options));
         $tagging = isset($taggings[$model]) ? $taggings[$model] : array();
         
         if (empty($tagging))
