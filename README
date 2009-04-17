@@ -312,12 +312,12 @@ tag suggestion, or by clicking on any of several suggested tags.
 To enable tag typeahead support:
 
 First make sure you are loading jQuery in your project, typically
-via view.yml (sfJqueryReloadedPlugin is also an option). We recommend
-you stay up to date with jQuery 1.3.x.
+via view.yml. We recommend you stay up to date with jQuery 1.3.x.
 
 Next, enable the taggableComplete module in settings.yml. If you are
 concerned about the names of valid tags being discovered by parties who
-are not logged in, secure the taggableComplete/complete action.
+are not logged in, secure the taggableComplete/complete action. For
+most projects this is not a big concern.
 
 Now, give your tag input fields the CSS class tag-input. This will be
 automatically detected by the jQuery code.
@@ -342,7 +342,7 @@ selectable tag suggestions being in `a` elements within those.
 
 The rest of the tags are present as non-clickable text in each `li` because 
 this neatly lines up the new tag suggestion with the user's input. Just
-hide that textl with `visibility: hidden`, NOT `display: none`. 
+hide that text with `visibility: hidden`, NOT `display: none`. 
 
 The right way to write your CSS depends on how your forms are structured.
 In our case, the label to the left of the input element is fixed at 120 pixels

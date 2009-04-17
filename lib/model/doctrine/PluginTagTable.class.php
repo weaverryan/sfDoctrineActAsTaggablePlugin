@@ -72,15 +72,18 @@ class PluginTagTable extends Doctrine_Table
     */
     public static function getAllTagNameWithCount(Doctrine_Query $q = null, $options = array())
     {
-        
-
         if ($q == null)
         {
             $q = Doctrine_Query::create();
         }
         
-        $q->select('tg.tag_id, t.name, COUNT(tg.id) AS t_count')
-          ->from('Tagging tg, tg.Tag t');
+        $q->select('tg.tag_id, t.name, COUNT(tg.id) AS t_count');
+        
+        //allows to pass more complex queries with a lot of joins
+        if (!$q->getDqlPart('from'))
+        {
+          $q->from('Tagging tg, tg.Tag t');    
+        }
 
         if (isset($options['limit']))
         {
