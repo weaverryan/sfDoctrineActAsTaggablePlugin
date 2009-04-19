@@ -22,9 +22,15 @@ class PluginTagTable extends Doctrine_Table
             $q = Doctrine_Query::create();
         }
         
-        $q->select('t.name')
-          ->from('Tag t INDEXBY t.name');
-				
+        if (!$q->getDqlPart('select'))
+        {
+          $q->select('t.name');
+        }
+        if (!$q->getDqlPart('from'))
+        {
+          $q->from('Tag t INDEXBY t.name');
+			  }	
+
         if (isset($options['limit']))
         {
             $q->limit($options['limit']);
