@@ -22,7 +22,7 @@
     </lead>
     <date>[automatic]</date>
     <version>
-        <release>0.0.4</release>
+        <release>0.0.5</release>
         <api>1.0.0</api>
     </version>
     <stability>
@@ -56,7 +56,7 @@
     <changelog>
         <release>
             <version>
-                <release>0.0.4</release>
+                <release>0.0.5</release>
                 <api>1.0.0</api>
             </version>
             <stability>
@@ -72,6 +72,23 @@
                 * Removing tags works properly (boutell, agilbert)
                 * getAllTagName lets you pass a query without setting select() and from() yourself (but you can if you want to) (boutell, agilbert)
                 * Fixed Doctrine INDEXBY error
+            </notes>
+        </release>
+         <release>
+            <version>
+                <release>0.0.4</release>
+                <api>1.0.0</api>
+            </version>
+            <stability>
+                <release>stable</release>
+                <api>stable</api>
+            </stability>
+            <license uri="http://www.symfony-project.com/license">MIT license</license>
+            <date>2009-03-08</date>
+            <license>MIT</license>
+            <notes>
+                * (klemens_u) PluginTagTable::getAllTagNameWithCount: Set the "from" query part only if not passed. This allows more complex queries with joins etc to be passed to the function.
+                * (punkave) Various bugfixes
             </notes>
         </release>
          <release>
