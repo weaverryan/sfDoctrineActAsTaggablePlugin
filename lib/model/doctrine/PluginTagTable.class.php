@@ -22,9 +22,15 @@ class PluginTagTable extends Doctrine_Table
             $q = Doctrine_Query::create();
         }
         
-        $q->select('t.name')
-          ->from('Tag t INDEXBY t.name');
-				
+        if (!$q->getDqlPart('select'))
+        {
+          $q->select('t.name');
+        }
+        if (!$q->getDqlPart('from'))
+        {
+          $q->from('Tag t INDEXBY t.name');
+			  }	
+
         if (isset($options['limit']))
         {
             $q->limit($options['limit']);
@@ -350,10 +356,17 @@ class PluginTagTable extends Doctrine_Table
             $q = Doctrine_Query::create()->from($model);
         }
         
-        $taggings = self::getTaggings($tags, array('model' => $model));
+        $taggings = self::getTaggings($tags, array_merge(array('model' => $model), $options));
         $tagging = isset($taggings[$model]) ? $taggings[$model] : array();
         
-        $q->whereIn($model . '.id', $tagging);
+        if (empty($tagging))
+        {
+          $q->where('false');
+        }
+        else
+        {
+          $q->whereIn($model . '.id', $tagging);
+        }
         
         return $q;
     }

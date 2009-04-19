@@ -14,14 +14,19 @@
         <user>klemens_u</user>
         <email>klemens.ullmann@ull.at</email>
         <active>yes</active>
+
+        <name>Tom Boutell</name>
+        <user>boutell</user>
+        <email>tom@punkave.com</email>
+        <active>yes</active>
     </lead>
     <date>[automatic]</date>
     <version>
-        <release>0.0.3</release>
+        <release>0.0.4</release>
         <api>1.0.0</api>
     </version>
     <stability>
-        <release>beta</release>
+        <release>stable</release>
         <api>stable</api>
     </stability>
     <license uri="http://www.symfony-project.com/license">MIT license</license>
@@ -50,6 +55,26 @@
  
     <changelog>
         <release>
+            <version>
+                <release>0.0.4</release>
+                <api>1.0.0</api>
+            </version>
+            <stability>
+                <release>stable</release>
+                <api>stable</api>
+            </stability>
+            <license uri="http://www.symfony-project.com/license">MIT license</license>
+            <date>2009-04-19</date>
+            <license>MIT</license>
+            <notes>
+                * Tag typeahead feature. Optional, based on jQuery (boutell)
+                * getObjectTaggedWithQuery correctly returns nothing rather than everything when there are no matching objects (agilbert)
+                * Removing tags works properly (boutell, agilbert)
+                * getAllTagName lets you pass a query without setting select() and from() yourself (but you can if you want to) (boutell, agilbert)
+                * Fixed Doctrine INDEXBY error
+            </notes>
+        </release>
+         <release>
             <version>
                 <release>0.0.3</release>
                 <api>1.0.0</api>
