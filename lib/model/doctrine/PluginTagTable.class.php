@@ -404,7 +404,8 @@ class PluginTagTable extends Doctrine_Table
         
         if(count($tags) > 0)
         {
-            $q->whereIn('t.name', $tags);
+            if (!isset($options['triple']) ) $q->whereIn('t.name', $tags);
+            else $q->whereIn('t.triple_value', $tags);
         }
 
         if (isset($options['triple']))
