@@ -83,7 +83,7 @@ class PluginTagTable extends Doctrine_Table
             $q = Doctrine_Query::create();
         }
         
-        $q->select('tg.tag_id, t.name, COUNT(tg.id) AS t_count');
+        $q->select('tg.tag_id, t.name, COUNT(tg.id) AS t_count,t.triple_value');
         
         //allows to pass more complex queries with a lot of joins
         if (!$q->getDqlPart('from'))
@@ -141,7 +141,7 @@ class PluginTagTable extends Doctrine_Table
         
         foreach($rs as $tag)
         {
-            $name = $tag['Tag']['name'];
+            $name = isset($options['triple']) ? $tag['Tag']['triple_value'] :$tag['Tag']['name'];
             $tags[$name] = $tag['t_count'];
         }
 
