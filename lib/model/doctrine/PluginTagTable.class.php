@@ -434,6 +434,12 @@ class PluginTagTable extends Doctrine_Table
         
         $tag_ids = $q->execute(array(), Doctrine::HYDRATE_ARRAY);
         
+        // If no tags are retrieved, there can be no associated taggings
+        if (!count($tag_ids))
+        {
+          return array();
+        }
+        
         $q = Doctrine_Query::create()
                            ->select('tg.taggable_id')
                            ->from('Tagging tg')
@@ -444,10 +450,10 @@ class PluginTagTable extends Doctrine_Table
         // Taggable model class option
         if (isset($options['model']))
         {
-            if (!class_exists($options['model'])) // TODO: add a test to that's a doctrine model...
+            if (!class_exists($options['model']) || !in_array('Doctrine_Record', class_parents($options['model'])))
             {
-                throw new DoctrineException(sprintf('The class "%s" does not exist, or it is not a model class.',
-                                      $options['model']));
+                throw new Doctrine_Exception(sprintf('The class "%s" does not exist, or it is not a model class.',
+                                                     $options['model']));
             }
             
             $q->addWhere('tg.taggable_model = ?', $options['model']);
