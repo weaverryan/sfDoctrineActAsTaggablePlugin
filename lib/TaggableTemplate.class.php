@@ -309,7 +309,7 @@ class Taggable extends Doctrine_Template
                   ->addWhere('tg.taggable_model = ?', get_class($this->getInvoker()))
                 ;
 
-                $saved_tags = $q->execute(array(), Doctrine::HYDRATE_ARRAY);
+                $saved_tags = $q->fetchArray();
                 $tags = array();
                 
                 foreach ($saved_tags as $key => $infos)
