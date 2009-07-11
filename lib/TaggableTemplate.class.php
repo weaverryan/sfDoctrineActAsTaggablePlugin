@@ -5,6 +5,7 @@
  *
  * (c) 2007 Xavier Lacot <xavier@lacot.org> - sfPropelActAsTaggableBehavior
  * (c) 2008 Mickael Kurmann <mickael.kurmann@gmail.com> - sfDoctrineActAsTaggablePlugin
+ * (c) 2009 Nicolas Perriault <nperriault@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -27,7 +28,7 @@
  *   a new tag is created if necessary, but the old one is not deleted.
  *
  *
- * The plugin associates a parameterHolder to Propel objects, with 3 namespaces:
+ * The plugin associates a parameterHolder to Doctrine objects, with 3 namespaces:
  *
  * - tags:
  *     Tags that have been attached to the object, but not yet saved.
@@ -457,78 +458,80 @@ class Taggable extends Doctrine_Template
     * display a long list of taggable objects with their associated tags: it
     * avoids to load tags per object, and gets all tags in a few requests.
     *
+    * WARNING: MySQL only
+    *
     * @param      array       $objects
     */
     public static function preloadTags(&$objects)
     {   
-        // FIXME: usage of group_concat... mysql specific
-        return array();
-        // $searched = array();
-        // 
-        //         foreach ($objects as $object)
-        //         {
-        //             $class = get_class($object);
-        //             
-        //             if (!isset($searched[$class]))
-        //             {
-        //                 $searched[$class] = array();
-        //             }
-        //             
-        //             $searched[$class][$object->getPrimaryKey()] = $object;
-        //         }
-        // 
-        //         if (count($searched) > 0)
-        //         {
-        //             $con = Propel::getConnection();
-        //             
-        //             foreach ($searched as $model => $instances)
-        //             {
-        //                 Doctrine_Query::create()
-        //                               ->select('t.taggable_id')
-        //                               ->from('Tagging t')
-        //                 array_map(array('sfDoctrineActAsTaggable', 'set_saved_tags'),
-        //                           $instances,
-        //                           array_fill(0, count($instances), array()));
-        //                 $keys = array_keys($instances);
-        //                 
-        //                 $query = 'SELECT %s as id,
-        //                                  GROUP_CONCAT(%s) as tags
-        //                           FROM %s, %s
-        //                           WHERE %s IN (%s)
-        //                           AND %s=?
-        //                           AND %s=%s
-        //                           GROUP BY %s';
-        //                 
-        //                 $query = sprintf($query,
-        //                                  TaggingPeer::TAGGABLE_ID,
-        //                                  TagPeer::NAME,
-        //                                  TaggingPeer::TABLE_NAME,
-        //                                  TagPeer::TABLE_NAME,
-        //                                  TaggingPeer::TAGGABLE_ID,
-        //                                  implode($keys, ','),
-        //                                  TaggingPeer::TAGGABLE_MODEL,
-        //                                  TaggingPeer::TAG_ID,
-        //                                  TagPeer::ID,
-        //                                  TaggingPeer::TAGGABLE_ID);
-        //                 $stmt = $con->prepareStatement($query);
-        //                 $stmt->setString(1, $model);
-        //                 $rs = $stmt->executeQuery();
-        //                 
-        //                 while ($rs->next())
-        //                 {
-        //                     $object = $instances[$rs->getInt('id')];
-        //                     $object_tags = explode(',', $rs->getString('tags'));
-        //                     $tags = array();
-        //                     
-        //                     foreach ($object_tags as $tag)
-        //                     {
-        //                         $tags[$tag] = $tag;
-        //                     }
-        //                     
-        //                     self::set_saved_tags($this->getInvoker(), $object, $tags);
-        //                 }
-        //             }
-        //         }
+        $searched = array();
+        
+        foreach ($objects as $object)
+        {
+            $class = get_class($object);
+            
+            if (!isset($searched[$class]))
+            {
+                $searched[$class] = array();
+            }
+            
+            $searched[$class][$object->getPrimaryKey()] = $object;
+        }
+        
+        if (count($searched) > 0)
+        {
+            foreach ($searched as $model => $instances)
+            {
+                Doctrine_Query::create()
+                              ->select('t.taggable_id')
+                              ->from('Tagging t');
+                array_map(array('Taggable', 'set_saved_tags'),
+                          $instances,
+                          array_fill(0, count($instances), array()));
+                $keys = array_keys($instances);
+                
+                $query = sprintf('SELECT %s as id,
+                                         GROUP_CONCAT(%s) as tags
+                                    FROM %s, %s
+                                    WHERE %s IN (%s)
+                                      AND %s=\'%s\'
+                                      AND %s=%s
+                                    GROUP BY %s',
+                                 'tagging.taggable_id',
+                                 'tag.name',
+                                 'tagging',
+                                 'tag',
+                                 'tagging.taggable_id',
+                                 implode($keys, ','),
+                                 'tagging.taggable_model',
+                                 $model,
+                                 'tagging.tag_id',
+                                 'tag.id',
+                                 'tagging.taggable_id');
+
+                $rows = Doctrine_manager::getInstance()
+                  ->getCurrentConnection()
+                  ->getDbh()
+                  ->query($query)
+                  ->fetchAll();
+                
+                foreach ($rows as $row)
+                {
+                    $object = $instances[$row['id']];
+
+                    $object_tags = explode(',', $row['tags']);
+
+                    $tags = array();
+                    
+                    foreach ($object_tags as $tag)
+                    {
+                        $tags[$tag] = $tag;
+                    }
+                    
+                    self::set_saved_tags($object, $tags);
+                }
+            }
+        }
     }
 
     /**

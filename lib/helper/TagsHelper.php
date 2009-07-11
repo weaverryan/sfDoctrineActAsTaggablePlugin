@@ -1,8 +1,10 @@
 <?php
 /*
- * This file is part of the sfPropelActAsTaggableBehavior package.
+ * This file is part of the sfPropelActAsDoctrineBehavior package.
  *
- * (c) 2007 Xavier Lacot <xavier@lacot.org>
+ * (c) 2007 Xavier Lacot <xavier@lacot.org> - sfPropelActAsTaggableBehavior
+ * (c) 2008 Mickael Kurmann <mickael.kurmann@gmail.com> - sfDoctrineActAsTaggablePlugin
+ * (c) 2009 Nicolas Perriault <nperriault@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
