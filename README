@@ -16,6 +16,23 @@ This behavior permits to attach tags to Doctrine objects. It includes tag-clouds
  * jQuery-based typeahead for tags (optional)
  * easy tags fixtures loading NOT YET
 
+## Upgrade Note ##
+
+Prior to my svn commit of 2009-08-03, the typeahead support inserted nonbreaking
+spaces, which some web browsers actually submitted even though they were part
+of plaintext elements. This has been fixed.
+
+You may have existing tag databases with what appear to be duplicate tags due
+to the existence of "Bob Smith" (with a normal space) and "Bob Smith"
+(with a nonbreaking space) side by side.
+
+The following MySQL command will clean this up:
+
+    update tagging set tag_id = 
+      (select id from tag where tag.name = 
+        trim(replace((select name from tag where tag.id = tag_id), 
+      char(160), ' ')));
+
 ## Philosophy of the stuff ##
 
  * taggable models must have a primary key
