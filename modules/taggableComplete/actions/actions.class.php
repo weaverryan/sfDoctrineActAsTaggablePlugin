@@ -63,7 +63,14 @@ class taggableCompleteActions extends sfActions
           if (isset($presentOrSuggested[$tag->getName()])) {
             continue;
           }
-          $suggestion['left'] = str_replace(' ', '&nbsp;', $all);
+          // At least some browsers actually submitted the
+          // nonbreaking spaces as ordinals distinct from regular spaces,
+          // producing distinct tags. So leave the spaces alone.
+
+          // Also, we no longer display 'left' visibly anyway because 
+          // that was never compatible with a list of tags that required scrolling
+
+          $suggestion['left'] = $all;
           $suggestion['suggested'] = $tag->getName();
           $presentOrSuggested[$tag->getName()] = true;
           $suggestion['right'] = 

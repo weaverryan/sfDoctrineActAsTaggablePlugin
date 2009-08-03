@@ -340,32 +340,23 @@ The tag suggestions will be in a jQuery-generated `span`
 element containing a `ul` element containing `li` elements, with the new,
 selectable tag suggestions being in `a` elements within those. 
 
-The rest of the tags are present as non-clickable text in each `li` because 
-this neatly lines up the new tag suggestion with the user's input. Just
-hide that text with `visibility: hidden`, NOT `display: none`. 
+The rest of the tags are present as non-clickable text in each `li` which makes
+it easy to reset the entire tag input field at one whack. Note that we now
+use `display: none` for the non-visible portion. 
 
 The right way to write your CSS depends on how your forms are structured.
-In our case, the label to the left of the input element is fixed at 120 pixels
-wide and the input element has a few pixels of padding, so this works great
-for our needs:
+The important thing is to hide the tag-spacer class:
 
-    span.tag-suggestions
-    {
-      display: block;
-      clear: both;
-      padding-top: 8px;
-      padding-left: 122px;
-    }
+.tag-suggestions.tag-spacer
+{
+  display: none;
+}
 
-    span.tag-suggestions li
-    {
-      visibility: hidden;
-    }
-
-    span.tag-suggestions a
-    {
-      visibility: visible;
-    }
+We now recommend `display: none` rather than `visibility: hidden` because
+the latter works poorly if the tag string is long enough to cause an input element
+to wrap. It's better to simply display the suggestions at left below the
+input field. You might want to push `.tag-suggestions` over a bit with
+`padding-left`.
 
 ## Plugin internals ##
 The plugin associates a parameterHolder to Propel objects, with 3 disjoin namespaces:
