@@ -375,6 +375,18 @@ to wrap. It's better to simply display the suggestions at left below the
 input field. You might want to push `.tag-suggestions` over a bit with
 `padding-left`.
 
+### Cleaning Up Orphan Tags ###
+
+Due to the limitations of foreign key relationships and the possibility of taggings pointing to many different tables, tags which no longer have any taggings are not automatically deleted from the database. Such orphan tags can be cleaned up easily with the `taggable:clean` Symfony task:
+
+    ./symfony taggable:clean
+
+Since this task is typically run from cron, it is silent by default unless something goes wrong. However, you can request verbose output:
+
+    ./symfony taggable:clean --verbose
+
+The `application`, `env`, and `connection` options are also supported.
+
 ## Plugin internals ##
 The plugin associates a parameterHolder to Propel objects, with 3 disjoin namespaces:
 

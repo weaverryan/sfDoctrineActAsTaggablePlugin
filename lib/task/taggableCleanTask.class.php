@@ -13,6 +13,7 @@ class taggableCleanTask extends sfBaseTask
       new sfCommandOption('application', null, sfCommandOption::PARAMETER_REQUIRED, 'The application name'),
       new sfCommandOption('env', null, sfCommandOption::PARAMETER_REQUIRED, 'The environment', 'dev'),
       new sfCommandOption('connection', null, sfCommandOption::PARAMETER_REQUIRED, 'The connection name', 'doctrine'),
+      new sfCommandOption('verbose', null, sfCommandOption::PARAMETER_NONE, 'Display more output', NULL),
       // add your own options here
     ));
 
@@ -34,7 +35,10 @@ EOF;
     $connection = $databaseManager->getDatabase($options['connection'] ? $options['connection'] : null)->getConnection();
 
     $deleted = PluginTagTable::purgeOrphans();
-    $count = count($deleted);
-    echo "deleted $count orphan tags.\n";
+    if ($options['verbose'])
+    {
+      $count = count($deleted);
+      echo "deleted $count orphan tags.\n";      
+    }
   }
 }
