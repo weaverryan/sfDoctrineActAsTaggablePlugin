@@ -36,14 +36,14 @@ function pkTagahead(tagaheadUrl)
       });
     }
     // Add suggestions span (you'll need to style that)
-    $('input.tag-input').after("<span class='tag-suggestions'></span>");
+    $('input.tag-input').after("<div class='tag-suggestions'></div>");
     // Each tag field remembers its suggestions span...
     $('input.tag-input').each(function() 
     {
       $(this).data("tag-peer", $(this).next()[0]);
     });
     // And vice versa
-    $('span.tag-suggestions').each(function() 
+    $('div.tag-suggestions').each(function() 
     {
       $(this).data("tag-peer", $(this).prev()[0]);
     });
@@ -51,7 +51,7 @@ function pkTagahead(tagaheadUrl)
     $('input.tag-input').keyup(function(event) 
     {
       var key = getKey(event);
-      // Tab key
+      // Tab key 
       if (key == 9)
       {
         var peer = $(this).data("tag-peer");

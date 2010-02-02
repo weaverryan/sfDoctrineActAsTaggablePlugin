@@ -387,7 +387,6 @@ Since this task is typically run from cron, it is silent by default unless somet
 
 The `application`, `env`, and `connection` options are also supported.
 
->>>>>>> .merge-right.r27425
 ## Plugin internals ##
 The plugin associates a parameterHolder to Propel objects, with 3 disjoin namespaces:
 
