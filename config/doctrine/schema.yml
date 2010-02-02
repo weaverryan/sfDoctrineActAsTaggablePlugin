@@ -16,13 +16,18 @@ Tag:
       type:           string(100)
   indexes:
     name:
-      fields: name
+      # boutell: this needs to be an array not just a string.
+      # The Doctrine MySQL driver was either honoring or ignoring it.
+      # The SQLite driver throws an exception, and justly so. Same for
+      # the other three indexes here. The indexes on Tagging were
+      # set up correctly
+      fields: [name]
     triple1:
-      fields: triple_namespace
+      fields: [triple_namespace]
     triple2:
-      fields: triple_key
+      fields: [triple_key]
     triple3:
-      fields: triple_value
+      fields: [triple_value]
         
 Tagging:
   columns:

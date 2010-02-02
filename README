@@ -16,6 +16,23 @@ This behavior permits to attach tags to Doctrine objects. It includes tag-clouds
  * jQuery-based typeahead for tags (optional)
  * easy tags fixtures loading NOT YET
 
+## Upgrade Note ##
+
+Prior to my svn commit of 2009-08-03, the typeahead support inserted nonbreaking
+spaces, which some web browsers actually submitted even though they were part
+of plaintext elements. This has been fixed.
+
+You may have existing tag databases with what appear to be duplicate tags due
+to the existence of "Bob Smith" (with a normal space) and "Bob Smith"
+(with a nonbreaking space) side by side.
+
+The following MySQL command will clean this up:
+
+    update tagging set tag_id = 
+      (select id from tag where tag.name = 
+        trim(replace((select name from tag where tag.id = tag_id), 
+      char(160), ' ')));
+
 ## Philosophy of the stuff ##
 
  * taggable models must have a primary key
@@ -340,33 +357,37 @@ The tag suggestions will be in a jQuery-generated `span`
 element containing a `ul` element containing `li` elements, with the new,
 selectable tag suggestions being in `a` elements within those. 
 
-The rest of the tags are present as non-clickable text in each `li` because 
-this neatly lines up the new tag suggestion with the user's input. Just
-hide that text with `visibility: hidden`, NOT `display: none`. 
+The rest of the tags are present as non-clickable text in each `li` which makes
+it easy to reset the entire tag input field at one whack. Note that we now
+use `display: none` for the non-visible portion. 
 
 The right way to write your CSS depends on how your forms are structured.
-In our case, the label to the left of the input element is fixed at 120 pixels
-wide and the input element has a few pixels of padding, so this works great
-for our needs:
+The important thing is to hide the tag-spacer class:
 
-    span.tag-suggestions
-    {
-      display: block;
-      clear: both;
-      padding-top: 8px;
-      padding-left: 122px;
-    }
+.tag-suggestions.tag-spacer
+{
+  display: none;
+}
 
-    span.tag-suggestions li
-    {
-      visibility: hidden;
-    }
+We now recommend `display: none` rather than `visibility: hidden` because
+the latter works poorly if the tag string is long enough to cause an input element
+to wrap. It's better to simply display the suggestions at left below the
+input field. You might want to push `.tag-suggestions` over a bit with
+`padding-left`.
 
-    span.tag-suggestions a
-    {
-      visibility: visible;
-    }
+### Cleaning Up Orphan Tags ###
 
+Due to the limitations of foreign key relationships and the possibility of taggings pointing to many different tables, tags which no longer have any taggings are not automatically deleted from the database. Such orphan tags can be cleaned up easily with the `taggable:clean` Symfony task:
+
+    ./symfony taggable:clean
+
+Since this task is typically run from cron, it is silent by default unless something goes wrong. However, you can request verbose output:
+
+    ./symfony taggable:clean --verbose
+
+The `application`, `env`, and `connection` options are also supported.
+
+>>>>>>> .merge-right.r27425
 ## Plugin internals ##
 The plugin associates a parameterHolder to Propel objects, with 3 disjoin namespaces:
 
