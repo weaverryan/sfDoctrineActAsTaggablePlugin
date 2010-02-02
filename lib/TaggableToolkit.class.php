@@ -21,7 +21,7 @@ class TaggableToolkit
     public static function cleanTagName($tag, $options = array())
     {
         $tag = trim(rtrim(str_replace(',', ' ', $tag)));
-        
+
         if(isset($options['case']))
         {
           $tag = call_user_func($options['case'], $tag);
@@ -44,7 +44,7 @@ class TaggableToolkit
           $tag = preg_replace('/\r?\n/', ',', $tag);
           $tag = explode(',', $tag);
           $tag = array_map('trim', $tag);
-          $tag = array_map('rtrim', $tag);
+          $tag = array_filter(array_map('rtrim', $tag));
         }
 
         return $tag;
@@ -128,17 +128,17 @@ class TaggableToolkit
         {
             throw new Exception(sprintf('%s is not a doctrine class...', $model));
         }
-        
+
         if(is_string($model))
         {
             $table = Doctrine::getTable($model);
         }
-        
+
         if(is_object($model))
         {
             $table = $model->getTable();
         }
-        
+
         return $table->hasTemplate('Taggable');
     }
 
@@ -172,11 +172,11 @@ class TaggableToolkit
 
         return $tags;
     }
-    
+
     /**
 	   * Transform every $tagname in $tags to namespace:key=$tagname:
 	   * array_walk($tags, 'TaggableToolkit::triplify', 'namespace:key');
-     * 
+     *
      * @param String $tagname
      * @param String $array_key
      * @param String $ns_key
