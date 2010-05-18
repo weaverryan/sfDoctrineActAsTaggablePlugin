@@ -48,9 +48,10 @@ The following MySQL command will clean this up:
         
         ./symfony plugin-install http://svn.symfony-project.com/plugins/sfDoctrineActAsTaggablePlugin/trunk
  
- * edit your schema.yml and add 
+ * edit config/doctrine/schema.yml and add the Taggable behavior to the model you want to be taggable.
  
-        templates: [Taggable] to model you want to be taggable
+        Post:
+          actAs:  { Timestampable: ~ , Taggable: ~ }
  
  * rebuild the model: 
  
@@ -240,6 +241,18 @@ This helper accepts several options:
 
  * ``add``: text to be used, after each tag, as a link for adding this tag to the current selection
  * ``class``: class of the tags cloud. By default, the class "tags-cloud" is used
+ * ``link_function``: the helper to use for linking, by default ``link_to()``.  You can use it to link to a javascript function, for example:
+
+        #!php
+        <?php
+        echo tag_cloud($tags, 'handle_tag_click("%s")', array(
+          'link_function'   =>  'link_to_function',  
+          'link_options'   =>  array('class=addtag')
+          )
+        );
+ 
+
+
  
 You might also want to display the tags of one item. The ``tag_list()`` helper is done for this:
 
