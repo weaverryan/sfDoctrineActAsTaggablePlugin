@@ -83,5 +83,54 @@ class taggableCompleteActions extends sfActions
       $n++;
     }
   }
+
+	public function executeAddTag(sfWebRequest $request)
+	{
+		$object_id = $request->getParameter('object_id');
+		$object_class = $request->getParameter('object_class');
+		
+		$this->forward404unless($object_id && $object_class);
+		
+		$object = Doctrine::getTable($object_class)->findOneBy('id', $object_id);
+		
+		$tags = $request->getParameter('tags');
+		
+		//TODO: Wrap this in some permission check
+		if(!method_exists($object, 'userHasPrivilege') || $object->userHasPrivilege('edit'))
+		{
+			$object->addTag($tags);
+			$object->save();
+		} else
+		{
+			$this->forward404();
+		}
+		
+		return $this->renderComponent('taggableComplete', 'tagWidget', array('object' => $object));
+		
+	}
+	
+	public function executeRemoveTag(sfWebRequest $request)
+	{
+		$object_id = $request->getParameter('object_id');
+		$object_class = $request->getParameter('object_class');
+		
+		$this->forward404unless($object_id && $object_class);
+		
+		$object = Doctrine::getTable($object_class)->findOneBy('id', $object_id);
+		
+		$tags = $request->getParameter('tags');
+		
+		//TODO: Wrap this in some permission check
+		if(!method_exists($object, 'userHasPrivilege') || $object->userHasPrivilege('edit'))
+		{
+			$object->removeTag($tags);
+			$object->save();
+		} else
+		{
+			$this->forward404();
+		}
+		
+		return $this->renderComponent('taggableComplete', 'tagWidget', array('object' => $object));
+	}
 }
 
