@@ -16,7 +16,7 @@ class taggableCompleteComponents extends sfComponents
 			$object_id = $this->getVarHolder()->get('object_id', false);
 			$object_class = $this->getVarHolder()->get('object_class', false);
 		
-			if(!$object_id || $object_class)
+			if(!$object_id || !$object_class)
 				throw new sfException("Must pass both object_id and object_class as option to this component.");
 		
 			$this->object = Doctrine::getTable($object_class)->findOneBy('id', $object_id);
