@@ -21,6 +21,11 @@ class taggableCompleteComponents extends sfComponents
 		
 			$this->object = Doctrine::getTable($object_class)->findOneBy('id', $object_id);
 		}
+		else
+		{
+			$object_class = get_class($this->object);
+			$object_id = $this->object->id;
+		}
 		
 		if(!$this->object)
 			throw new sfException("Object with specified parameters does not exist.");
