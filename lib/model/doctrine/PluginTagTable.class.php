@@ -433,6 +433,12 @@ class PluginTagTable extends Doctrine_Table
         }
         
         $tag_ids = $q->execute(array(), Doctrine::HYDRATE_ARRAY);
+
+        // if no ids were matched, just return an array - no items were matched.
+        if (count($tag_ids) == 0)
+        {
+          return array();
+        }
         
         $q = Doctrine_Query::create()
                            ->select('tg.taggable_id')
