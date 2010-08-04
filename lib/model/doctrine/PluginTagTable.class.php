@@ -337,7 +337,7 @@ class PluginTagTable extends Doctrine_Table
     * @param  Doctrine_Query  $q     Existing Doctrine_Query to hydrate
     * @return Doctrine_Query
     */
-    public static function getObjectTaggedWithQuery($model, $tags = array(), Doctrine_Query $q = null, $options = array())
+    public static function getObjectTaggedWithQuery($model, $tags = array(), Doctrine_Query $q = null, $options = array(), $alias = null)
     {
         $tags = TaggableToolkit::explodeTagString($tags);
     
@@ -358,14 +358,16 @@ class PluginTagTable extends Doctrine_Table
         
         $taggings = self::getTaggings($tags, array_merge(array('model' => $model), $options));
         $tagging = isset($taggings[$model]) ? $taggings[$model] : array();
-        
+
         if (empty($tagging))
         {
           $q->where('false');
         }
         else
         {
-          $q->whereIn($model . '.id', $tagging);
+          $alias = ($alias === null) ? $model : $alias;
+
+          $q->whereIn($alias . '.id', $tagging);
         }
         
         return $q;
