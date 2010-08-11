@@ -1,10 +1,9 @@
 <?php
 
-class taggableRouting extends sfPatternRouting
+class taggableRouting
 {
   static public function listenToRoutingLoadConfigurationEvent(sfEvent $event)
   {
-
     $r = $event->getSubject();
 
     $r->prependRoute('taggable_add_tag', 
