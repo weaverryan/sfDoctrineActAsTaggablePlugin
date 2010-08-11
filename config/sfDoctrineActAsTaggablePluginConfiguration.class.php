@@ -10,7 +10,6 @@
  */
 class sfDoctrineActAsTaggablePluginConfiguration extends sfPluginConfiguration
 {
-
   static $registered = false;
   /**
    * @see sfPluginConfiguration
@@ -28,6 +27,10 @@ class sfDoctrineActAsTaggablePluginConfiguration extends sfPluginConfiguration
 		  }
       self::$registered = true;
     }
+
+    // extend the sfForm class via an event
+    $form = new sfDoctrineTaggableForm();
+    $this->dispatcher->connect('form.method_not_found', array($form, 'listenFormMethodNotFound'));
   }
   
 }

@@ -1,7 +1,8 @@
 # sfDoctrineActAsTaggablePlugin #
 
 ## Introduction ##
-This behavior permits to attach tags to Doctrine objects. It includes tag-clouds generation and helpers to display these clouds.
+This behavior permits to attach tags to Doctrine objects. It includes
+tag-clouds generation and helpers to display these clouds.
 
 [[Image(sfPropelActAsTaggableBehaviorPlugin.png)]]
 
@@ -205,6 +206,30 @@ The methods ``PluginTagTable::getRelatedTags()``, ``PluginTagTable::getObjectTag
     // this will return all the objects that are at least tagged with 2 tags in the 
     // list "tata", "titi", "tutu", and "toto".
     $objects = PluginTagTable::getObjectTaggedWith('tata, titi, tutu, toto', array('nb_common_tags' => 2));
+
+### Adding tags to forms
+
+Adding a tag widget to your forms is easy. From inside your form, simply
+do the following:
+
+    public function configure()
+    {
+      $this->addTagsField();
+    }
+
+This will add a widget and a validator for a field called `tags`. This field
+will automatically populate and save correctly. If you'd like to configure
+the widget and validator used in this method, simply override the default
+configuration provided in the plugin's `app.yml`:
+
+    all:
+      sf_doctrine_taggable:
+        widget:
+          class:     sfWidgetFormInputText
+          options:   []
+        validator:
+          class:     sfValidatorString
+          options:   []
 
 ### Tags cloud generation ###
 The plugin also proposes methods and helpers for generating tags cloud:

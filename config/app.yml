@@ -1,0 +1,10 @@
+all:
+  sf_doctrine_taggable:
+
+    # The widget and validator used with $form->addTagsField();
+    widget:
+      class:     sfWidgetFormInputText
+      options:   []
+    validator:
+      class:     sfValidatorString
+      options:   []
