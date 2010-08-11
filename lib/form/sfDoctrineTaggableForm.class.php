@@ -15,6 +15,16 @@ class sfDoctrineTaggableForm
 
   public function addTagsField()
   {
+    if (!($this->_form instanceof sfFormObject))
+    {
+      throw new sfException('A tags field can only be added to a Doctrine form.');
+    }
+
+    if (!$this->_form->getObject()->getTable()->hasTemplate('Taggable'))
+    {
+      throw new sfException('A tags field can only be added to a form whose model act as "Taggable".');
+    }
+
     // setup the widget
     $config = sfConfig::get('app_sf_doctrine_taggable_widget');
     $class = isset($config['class']) ? $config['class'] : sfWidgetFormInputText();
