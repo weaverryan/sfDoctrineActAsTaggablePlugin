@@ -172,40 +172,49 @@ These methods are all located in the ``PluginTagTable`` class:
 
     #!php
     <?php
+    $tbl = Doctrine_Core::getTable('Tag');
+
     // gets the list of the models that have at least one instance tagged with one
     // or several specific tags
-    $tutu_toto_models = PluginTagTable::getModelsNameTaggedWith('tutu, toto');
+    $tutu_toto_models = $tbl->getModelsNameTaggedWith('tutu, toto');
 
     // gets objects tagged with one or several specific tags
-    $tutu_toto_objects = PluginTagTable::getObjectTaggedWith('tutu, toto');
-    $tutu_toto_objects = PluginTagTable::getObjectTaggedWith('tutu, toto', array('triple' => true, 'namespace' => 'geo'));
-    $tutu_toto_objects = PluginTagTable::getObjectTaggedWith('tutu, toto', array('model' => 'Post'));
+    $tutu_toto_objects = $tbl->getObjectTaggedWith('tutu, toto');
+    $tutu_toto_objects = $tbl->getObjectTaggedWith('tutu, toto', array('triple' => true, 'namespace' => 'geo'));
+    $tutu_toto_objects = $tbl->getObjectTaggedWith('tutu, toto', array('model' => 'Post'));
 
-    // it is als possible to select objects tagged with certain types of triple tags
+    // it is also possible to select objects tagged with certain types of triple tags
     // in this special case, the first "tags" parameter is useless. For instance,
     // this line will return all the objects that have a triple tag in the namespace
     // "geo":
-    $tutu_toto_objects = PluginTagTable::getObjectTaggedWith(array(), array('namespace' => 'geo'));
+    $tutu_toto_objects = $tbl->getObjectTaggedWith(array(), array('namespace' => 'geo'));
 
-    // gets a criteria that permits to select objects tagged with one or several
-    // specific tags
-    $criteria = PluginTagTable::getObjectTaggedWithQuery('Post', 'tutu, toto');
+    // sets up a query that selects objects tagged with one or several
+    // specific tags (adds a whereIn post.id (xx,xx) type clause)
+    $criteria = $tbl->getObjectTaggedWithQuery('Post', 'tutu, toto');
     $criteria->addWhere('post.published = true');
     $posts = $q->execute();
 
     // gets objects that are tagged with a certain number of tags within a set of
     // tags. For instance, the following line returns all the object tagged with at
     // least two of the following tags: toto, tutu, tata, titi
-    $objects = PluginTagTable::getObjectTaggedWith('tutu, toto, tata, titi',
+    $objects = $tbl->getObjectTaggedWith('tutu, toto, tata, titi',
                                       array('nb_common_tags' => 2));
 
-The methods ``PluginTagTable::getRelatedTags()``, ``PluginTagTable::getObjectTaggedWith()``, and ``PluginTagTable::getObjectTaggedWithQuery()`` accept one additional parameter, "``nb_common_tags``", that permits to select objects that share a certain number of tags in common with the given tags list. For instance:
+The methods `PluginTagTable::getRelatedTags()`,
+`PluginTagTable::getObjectTaggedWith()`, and
+`PluginTagTable::getObjectTaggedWithQuery()` accept one additional parameter,
+`nb_common_tags`, that allows for the selection of objects that share a
+certain number of tags in common with the given tags list. For instance:
 
     #!php
     <?php
     // this will return all the objects that are at least tagged with 2 tags in the 
     // list "tata", "titi", "tutu", and "toto".
-    $objects = PluginTagTable::getObjectTaggedWith('tata, titi, tutu, toto', array('nb_common_tags' => 2));
+    $objects = Doctrine_Core::getTable('Tag')getObjectTaggedWith(
+      'tata, titi, tutu, toto',
+      array('nb_common_tags' => 2)
+    );
 
 ### Adding tags to forms
 
@@ -232,6 +241,7 @@ configuration provided in the plugin's `app.yml`:
           options:   []
 
 ### Tags cloud generation ###
+
 The plugin also proposes methods and helpers for generating tags cloud:
 
     #!php
