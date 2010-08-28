@@ -3,8 +3,9 @@ all:
 
     # The widget and validator used with $form->addTagsField();
     widget:
-      class:     sfWidgetFormInputText
-      options:   []
+      class:      sfWidgetFormInputText
+      options:    []
     validator:
-      class:     sfValidatorString
-      options:   []
+      class:      sfValidatorString
+      options:
+        required: false
