@@ -6,9 +6,9 @@ class PluginTagTable extends Doctrine_Table
 {
     /**
     * Returns all tags, eventually with a limit option.
-    * The first optionnal parameter permits to add some restrictions on the
+    * The first optional parameter permits to add some restrictions on the
     * objects the selected tags are related to.
-    * The second optionnal parameter permits to restrict the tag selection with
+    * The second optional parameter permits to restrict the tag selection with
     * different criterias
     *
     * @param      Doctrine_Query    $c
