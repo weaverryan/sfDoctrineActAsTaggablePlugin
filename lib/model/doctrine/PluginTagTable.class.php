@@ -65,7 +65,7 @@ class PluginTagTable extends Doctrine_Table
     }
 
     /**
-    * Returns all tags, sorted by name, with their number of occurencies.
+    * Returns all tags, sorted by name, with their number of occurrences.
     * The first optional parameter permits to add some restrictions on the
     * objects the selected tags are related to.
     * The second optional parameter permits to restrict the tag selection with
@@ -194,9 +194,9 @@ class PluginTagTable extends Doctrine_Table
     * Returns the most popular tags with their associated weight. See
     * TaggableToolkit::normalize for more details.
     *
-    * The first optionnal parameter permits to add some restrictions on the
+    * The first optional parameter permits to add some restrictions on the
     * objects the selected tags are related to.
-    * The second optionnal parameter permits to restrict the tag selection with
+    * The second optional parameter permits to restrict the tag selection with
     * different criterias
     *
     * @param      Criteria    $c
@@ -211,6 +211,7 @@ class PluginTagTable extends Doctrine_Table
         }
         
         $all_tags = self::getAllTagNameWithCount($q, $options);
+
         return TaggableToolkit::normalize($all_tags);
     }
 
@@ -221,7 +222,7 @@ class PluginTagTable extends Doctrine_Table
     * The "related tags" of one tag are the ones which have at least one
     * taggable object in common.
     *
-    * The first optionnal parameter permits to add some restrictions on the
+    * The first optional parameter permits to add some restrictions on the
     * objects the selected tags are related to.
     * The second optionnal parameter permits to restrict the tag selection with
     * different criterias
