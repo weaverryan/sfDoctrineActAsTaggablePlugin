@@ -60,8 +60,7 @@ class PluginTagTable extends Doctrine_Table
         {
             $q->addWhere('t.triple_value = ?', $options['value']);
         }
-        
-//        return array_keys($q->orderBy('t.name')->execute(array(), Doctrine::HYDRATE_ARRAY));
+
         return array_keys($q->execute(array(), Doctrine::HYDRATE_ARRAY));
     }
 
